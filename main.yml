@@ -1,0 +1,26 @@
+---
+# - hosts: build_host
+- hosts: localhost
+  become: true
+  vars:
+    lfs_root: /mnt/lfs
+  environment:
+    LFS: "{{ lfs_root }}"
+  tasks:
+    - name: Prepare the host system
+      include: host_prep.yml
+
+    - name: Partition the disk for LFS
+      include: partition.yml
+
+    - name: Download the LFS sources
+      include: download_sources.yml
+
+    - name: Perform the final preparations
+      include: final_prep.yml
+
+    - name: Build the LFS build tools
+      become: true
+      become_user: root
+      include: build_tools.yml
+      # become_user: lfs
