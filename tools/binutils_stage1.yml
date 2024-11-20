@@ -21,7 +21,7 @@
 
 
 - name: Build binutils
-  shell: make -j 8
+  shell: make -j 10
   args:
     chdir: "{{ lfs_root }}/sources/binutils-2.35/build"
     # chdir: "{{ lfs_root }}/sources/binutils-2.31.1/build"

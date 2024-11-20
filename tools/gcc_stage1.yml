@@ -68,17 +68,18 @@
     # chdir: "{{ lfs_root }}/sources/gcc-8.2.0"
 
 
+# ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$LFS --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
 - name: Configure the GCC build
   shell: |
     export LFS_TGT=$(uname -m)-lfs-linux-gnu
-    ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$LFS --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
+    ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.35 --with-sysroot=$LFS --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
   args:
     chdir: "{{ lfs_root }}/sources/gcc-10.2.0/build"
     # chdir: "{{ lfs_root }}/sources/gcc-8.2.0/build"
 
 
 - name: Build GCC
-  shell: make -j 8
+  shell: make -j 10
   args:
     chdir: "{{ lfs_root }}/sources/gcc-10.2.0/build"
     # chdir: "{{ lfs_root }}/sources/gcc-8.2.0/build"
