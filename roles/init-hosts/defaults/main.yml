@@ -1,20 +1,20 @@
-rh_common_pkgs: "dconf-editor,automake,autoconf,aclocal,libisl"
+rh_common_pkgs: "dconf-editor,automake,autoconf,sshpass"
 rh_common_devel_pkgs: "git,libisl-devel"
 
-rh7_common_devel_pkgs: "automake1.16,aclocal1.16,libglib2.0-bin,libisl23"
-rh8_common_devel_pkgs: "automake1.16,aclocal1.16,libglib2.0-bin,libisl23"
-rh9_common_devel_pkgs: "automake1.16,aclocal1.16,libglib2.0-bin,libisl23"
+rh7_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+rh8_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+rh9_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
 
-suse_common_pkgs: "dconf-editor,automake,autoconf,aclocal,libisl"
+suse_common_pkgs: "dconf-editor,automake,autoconf,sshpass"
 suse_common_devel_pkgs: "git"
-suse15_common_devel_pkgs: "automake1.16,aclocal1.16,libglib2.0-bin,libisl23"
+suse15_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
 
-ubt_common_pkgs: "dconf-editor,automake,autoconf,aclocal,libisl"
+ubt_common_pkgs: "dconf-editor,automake,autoconf,sshpass"
 ubt_common_devel_pkgs: "git,libisl-dev"
 
-ubt20_common_devel_pkgs: "automake1.16,aclocal1.16,libglib2.0-bin,libisl23"
-ubt22_common_devel_pkgs: "automake1.16,aclocal1.16,libglib2.0-bin,libisl23"
-ubt23_common_devel_pkgs: "automake1.16,aclocal1.16,libglib2.0-bin,libisl23"
+ubt20_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+ubt22_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+ubt23_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
 
 official_rh_pkgs: "pdsh"
 official_ubt_pkgs: "pdsh"

@@ -1,6 +1,6 @@
 - name: Create the Sources Directory
   file:
-    path: "{{ lfs_root }}/sources/gcc-10.2.0/{{ item }}"
+    path: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/{{ item }}"
     state: directory
     mode: 755
     owner: root
@@ -8,11 +8,12 @@
   with_items:
     - mpfr
     - gmp
+    - mpc
 
 
 #- name: Create Symbolic Link
 #  file:
-#   src: "/opt/application/i99/{{SOURCE_FOLDER}}/"
+#   src: "/opt/application/i99/{{ SOURCE_FOLDER }}/"
 #   dest: "/opt/application/i99/SYMLINK"
 #   state: link
 
@@ -20,14 +21,14 @@
 - name: Unpack GCC
   unarchive:
     remote_src: yes
-    src: "{{ lfs_root }}/sources/gcc-10.2.0.tar.xz"
+    src: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}.tar.xz"
     dest: "{{ lfs_root }}/sources"
     # src: "{{ lfs_root }}/sources/gcc-8.2.0.tar.xz"
 
 
 - name: Create GCC build directory
   file:
-    path: "{{ lfs_root }}/sources/gcc-10.2.0/build"
+    path: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/build"
     state: directory
     # path: "{{ lfs_root }}/sources/gcc-8.2.0/build"
 
@@ -35,8 +36,8 @@
 - name: Unpack MPFR
   unarchive:
     remote_src: yes
-    src: "{{ lfs_root }}/sources/mpfr-4.1.0.tar.xz"
-    dest: "{{ lfs_root }}/sources/gcc-10.2.0/mpfr"
+    src: "{{ lfs_root }}/sources/mpfr-{{ mpfr_version }}.tar.xz"
+    dest: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/mpfr"
     extra_opts: ['--strip-components=1', '--show-stored-names']
 
     # src: "{{ lfs_root }}/sources/mpfr-4.0.1.tar.xz"
@@ -46,8 +47,8 @@
 - name: Unpack GMP
   unarchive:
     remote_src: yes
-    src: "{{ lfs_root }}/sources/gmp-6.2.0.tar.xz"
-    dest: "{{ lfs_root }}/sources/gcc-10.2.0/gmp"
+    src: "{{ lfs_root }}/sources/gmp-{{ gmp_version }}.tar.xz"
+    dest: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/gmp"
     extra_opts: ['--strip-components=1', '--show-stored-names']
     # src: "{{ lfs_root }}/sources/gmp-6.1.2.tar.xz"
     # dest: "{{ lfs_root }}/sources/gcc-8.2.0"
@@ -56,45 +57,45 @@
 - name: Unpack MPC
   unarchive:
     remote_src: yes
-    src: "{{ lfs_root }}/sources/mpc-1.1.0.tar.gz"
-    dest: "{{ lfs_root }}/sources/gcc-10.2.0"
+    src: "{{ lfs_root }}/sources/mpc-{{ mpc_version }}.tar.gz"
+    dest: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/mpc"
+    extra_opts: ['--strip-components=1', '--show-stored-names']
     # dest: "{{ lfs_root }}/sources/gcc-8.2.0"
 
 
 - name: Run a script to prepare for the GCC build
   script: scripts/gcc_stage1_prep.sh
   args:
-    chdir: "{{ lfs_root }}/sources/gcc-10.2.0"
+    chdir: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}"
     # chdir: "{{ lfs_root }}/sources/gcc-8.2.0"
 
 
-# ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$LFS --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
 - name: Configure the GCC build
   shell: |
     export LFS_TGT=$(uname -m)-lfs-linux-gnu
-    ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.35 --with-sysroot=$LFS --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
+    ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version={{ glibc_version }} --with-sysroot=$LFS --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
   args:
-    chdir: "{{ lfs_root }}/sources/gcc-10.2.0/build"
+    chdir: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/build"
     # chdir: "{{ lfs_root }}/sources/gcc-8.2.0/build"
 
 
 - name: Build GCC
   shell: make -j 10
   args:
-    chdir: "{{ lfs_root }}/sources/gcc-10.2.0/build"
+    chdir: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/build"
     # chdir: "{{ lfs_root }}/sources/gcc-8.2.0/build"
 
 
 - name: Install GCC
   shell: make install
   args:
-    chdir: "{{ lfs_root }}/sources/gcc-10.2.0/build"
+    chdir: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}/build"
     # chdir: "{{ lfs_root }}/sources/gcc-8.2.0/build"
 
 
 - name: Clean up the sources
   file:
-    path: "{{ lfs_root }}/sources/gcc-10.2.0"
+    path: "{{ lfs_root }}/sources/gcc-{{ gcc_version }}"
     state: absent
     # path: "{{ lfs_root }}/sources/gcc-8.2.0"
 

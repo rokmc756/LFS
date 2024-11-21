@@ -1,0 +1,68 @@
+- name: Create the Tools Directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+  with_items:
+    - "{{ lfs.mnt_dir }}/scripts"
+    - "{{ lfs.mnt_dir }}/tools"
+    # - "{{ lfs.tools_dir }}"
+
+
+- name: Link $LFS/tools to /tools
+  file:
+    dest: "{{ lfs.tools_dir }}"
+    state: link
+    src: "{{ lfs.mnt_dir }}/tools"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+
+
+- name: Create the LFS Group
+  group:
+    name: lfs
+    state: present
+
+
+- name: Create the LFS User
+  user:
+    name: lfs
+    state: present
+    shell: /bin/bash
+    group: lfs
+    create_home: yes
+    skeleton: /dev/null
+
+
+- name: Make the New LFS User the Owner of the Tools and Sources Directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+  with_items:
+    - "{{ lfs.mnt_dir }}/tools"
+    - "{{ lfs.mnt_dir }}/sources"
+
+
+- name: Copy LFS Scripts
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ lfs.mnt_dir }}/scripts/{{ item }}"
+    mode: 0755
+  register: copy_lfs_scripts
+  with_items:
+    - "gcc-stage1-prep.sh"
+    - "lfs-dotfiles.sh"
+    - "version-check.sh"
+- debug: msg={{ copy_lfs_scripts }}
+
+
+- name: Create the LFS User's Dotfiles
+  shell: scripts/lfs-dotfiles.sh
+  args:
+    chdir: "{{ lfs.mnt_dir }}/"
+
+  # script: scripts/lfs-dotfiles.sh
+  # shell: {{ lfs.mnt_dir }}/scripts/{{ item }}.j2"
+

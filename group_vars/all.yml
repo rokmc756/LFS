@@ -2,78 +2,41 @@ ansible_ssh_pass: "changeme"
 ansible_become_pass: "changeme"
 
 lfs:
+  user: jomoon
+  group: jomoon
+  # mnt_dir: /home/jomoon/mnt/lfs
+  # tools_dir: /home/jomoon/tools
+  mnt_dir: /mnt/lfs
+  tools_dir: /tools
+  binutils_version: "2.43.1"
+  gcc_version: "14.2.0"
+  glibc_version: "2.35"
+  mpc_version: "1.3.1"
+  mpfr_version: "4.2.1"
+  gmp_version: "6.3.0"
+  systemd_version: "12.2"
+  root_dev: sdb
   domain: "jtest.pivotal.io"
-  rdomain: "io.pivotal.jtest"
-  control_node: "{{ hostvars[groups['mon'][0]]['ansible_hostname'] }}"
-  cluster_name: jack-kr-ceph
-  major_version: "19"
-  minor_version: "2"
-  build_version: "0"
-  patch_version: ""
-  download_url: ""
-  download: false
-  base_path: /root
-  admin_user: admin
-  admin_passwd: changeme
-  bin_type: tar
-  nvme: true
-  mon_host_num: "{{ groups['mon'] | length }}"
-  osd_host_num: "{{ groups['osd'] | length }}"
-  obs: false
-  fs: false
-  block:
-    rbd: true
-    iscsi: false
   net:
     conn: "dpdk"                     # dpdk or udp
     gateway: "192.168.1.1"
     ha1: 1
     ha2: 2
     type: "virtual"                  # or physical
-    ipaddr0: "192.168.0.7"
-    ipaddr1: "192.168.1.7"
-    ipaddr2: "192.168.2.7"
+    ipaddr0: "192.168.0.12"
+    ipaddr1: "192.168.1.12"
+    ipaddr2: "192.168.2.12"
   backend:
     net:
       type: "virtual"                # or physical
-      ipaddr0: "192.168.0.7"
-      ipaddr1: "192.168.1.7"
-      ipaddr2: "192.168.2.7"
-  protocol:
-    smb: false
-    nfs:
-      single: false
-      ganesha: false
-    rgw:
-      single: false
-      multi: false
-  client:
-    cephfs: false
-    smb: false
-    block:
-      rbd: false
-      iscsi: false
-    nfs:
-      single: false
-      ganesha: false
-    rgw:
-      single: false
-      multi: false
-    net:
-      type: "virtual"                # or physical
-      cores: 1
-      ipaddr0: "192.168.0.7"
-      ipaddr1: "192.168.1.7"
-      ipaddr2: "192.168.2.7"
-  ext_storage:
-    net:
-      ipaddr0: "192.168.0."
-      ipaddr1: "192.168.1."
-      ipaddr2: "192.168.2."
+      ipaddr0: "192.168.0.12"
+      ipaddr1: "192.168.1.12"
+      ipaddr2: "192.168.2.12"
 
 
 vmware:
   esxi_hostname: "192.168.0.231"
   esxi_username: "root"
   esxi_password: "Changeme34#$"
+
 

@@ -1,0 +1,70 @@
+- name: Create the Sources Directory
+  file:
+    path: "{{ lfs.mnt_dir }}/sources"
+    state: directory
+    mode: a+wt
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+
+
+- name: Download the Sources List
+  get_url:
+    url: http://www.linuxfromscratch.org/lfs/view/{{ lfs.systemd_version }}-systemd/wget-list
+    dest: "{{ lfs.mnt_dir }}/sources/wget-list"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+
+
+- name: Replace URL of Download Link to Mirror of savannah.gnu.org
+  replace:
+    path: "{{ lfs.mnt_dir }}/sources/wget-list"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.line }}"
+    backup: "{{ item.backup }}"
+  with_items:
+    - { regexp: "^https://download.savannah", line: "https://download-mirror.savannah", state: present, backup: no }
+    - { regexp: "^https://downloads.sourceforge", line: "https://prdownloads.sourceforge", state: present, backup: no }
+
+
+- name: Replace the Broken URL Links in wget-list
+  replace:
+    path: "{{ lfs.mnt_dir }}/sources/wget-list"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.line }}"
+    backup: "{{ item.backup }}"
+  register: replace_broken_links
+  with_items:
+    - { regexp: "^https://prdownloads.sourceforge.net/expat/expat-2.6.2.tar.xz", line: "https://featherwallet.org/files/sources/expat-2.6.2.tar.xz", state: present, backup: no }
+- debug: msg={{ replace_broken_links }}
+
+
+- name: Get Contents of wget-list
+  command: cat {{ lfs.mnt_dir }}/sources/wget-list
+  register: wget_file_list
+  # Added due to not run lookup('file')
+
+
+- name: Download All Files From the Sources List
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ lfs.mnt_dir }}/sources/{{ item.split('/')[-1] }}"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+  with_items: "{{ wget_file_list.stdout.splitlines() }}"
+  # lookup('file') could be executable on Ansible Control Machine which is not Remote Ansible Node
+  # with_items: "{{ lookup('file', lfs.mnt_dir + '/sources/wget-list').splitlines() }}"
+
+
+- name: Download the md5sums File
+  get_url:
+    url: http://www.linuxfromscratch.org/lfs/view/{{ lfs.systemd_version }}-systemd/md5sums
+    dest: "{{ lfs.mnt_dir }}/sources/md5sums"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+
+
+- name: Check the MD5s of the Sources
+  command: md5sum -c md5sums
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/"
+

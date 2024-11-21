@@ -1,0 +1,10 @@
+- name: Build binutils (stage 1)
+  import_tasks: tools/binutils-stage1.yml
+  tags:
+    - binutils
+
+- name: Build GCC (stage 1)
+  import_tasks: tools/gcc-stage1.yml
+  tags:
+    - gcc
+

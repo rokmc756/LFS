@@ -1,0 +1,69 @@
+- name: Unpack Binutils
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
+
+
+- name: Create Build Directory for Bintuils
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
+    state: directory
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+
+
+- name: Configure the Binutils Build
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu
+    ../configure --prefix={{ lfs.tools_dir }} --with-sysroot=$LFS --with-lib-path={{ lfs.tools_dir }}/lib --target=$LFS_TGT --disable-nls --disable-werror
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Build Binutils
+  become_user: root
+  shell: make -j $(echo "$(cat /proc/cpuinfo | grep processor | tail -1 | awk '{print $3}') - 1" | bc)
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
+
+
+- name: Create the Lib Directory
+  become_user: root
+  file:
+    path: "{{ lfs.tools_dir }}/lib"
+    state: directory
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+
+
+- name: Create the Lib64 Symlink
+  become_user: root
+  file:
+    dest: "{{ lfs.tools_dir }}/lib64"
+    state: link
+    src: "{{ lfs.tools_dir }}/lib"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+
+
+- name: Install Binutils
+  become_user: root
+  shell: make install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
+
+
+- name: Clean the Source Directory
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}"
+    state: absent
+

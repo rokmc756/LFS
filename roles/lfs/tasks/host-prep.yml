@@ -13,6 +13,7 @@
     #    packages:
     #      - dconf-cli
 
+
 - name: Install LFS dependencies
   apt:
     name: "{{ packages }}"
@@ -49,6 +50,7 @@
       - texinfo
       - xz-utils
 
+
 - name: Disable Ubuntu's use of dash as the default shell instead of bash
   debconf:
     name: dash
@@ -56,11 +58,14 @@
     vtype: boolean
     value: false
 
+
 - name: Reconfigure dash with the new setting
-  command: dpkg-reconfigure dash -p critical
+  command: /sbin/dpkg-reconfigure dash -p critical
+
 
 - name: Disable Ubuntu's annoying habit of automounting newly formatted disks
-  command: gsettings set org.gnome.desktop.media-handling automount false 
+  command: gsettings set org.gnome.desktop.media-handling automount false
+
 
 - name: Run the version check script
   script: scripts/version-check.sh
@@ -70,3 +75,4 @@
     'ERROR' in version_check.stdout or
     'not found' in version_check.stdout or
     'failed' in version_check.stdout
+

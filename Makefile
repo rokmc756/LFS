@@ -50,43 +50,18 @@ all:
 #	ansible-playbook -i ansible-hosts -u ${USERNAME} --ssh-common-args='-o UserKnownHostsFile=./known_hosts -o VerifyHostKeyDNS=true' install-ansible-prereqs.yml
 
 
-# https://ansible-tutorial.schoolofdevops.com/control_structures/
-download: role-update download-ceph.yml
-	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} download-ceph.yml --tags="download"
 init: role-update init-hosts.yml
-	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} init-hosts.yml --tags="init"
+	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} init-hosts.yml --tags="init"
+
 uninit: role-update init-hosts.yml
-	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} init-hosts.yml --tags="uninit"
-boot: role-update control-vms.yml
-	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} control-vms.yml --extra-vars "power_state=powered-on power_title=Power-On VMs"
-shutdown: role-update control-vms.yml
-	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} control-vms.yml --extra-vars "power_state=shutdown-guest power_title=Shutdown VMs"
+	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} init-hosts.yml --tags="uninit"
 
+build: role-update main.yml
+	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} main.yml --tags="build"
 
-ceph:
-	make -f makefile_configs/Makefile.ceph r=${r} s=${s} c=${c} USERNAME=${USERNAME}
+gcc: role-update main.yml
+	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} main.yml --tags="gcc"
 
-cephfs:
-	make -f makefile_configs/Makefile.cephfs r=${r} s=${s} c=${c} USERNAME=${USERNAME}
-
-block:
-	make -f makefile_configs/Makefile.block r=${r} s=${s} c=${c} USERNAME=${USERNAME}
-
-rgw:
-	make -f makefile_configs/Makefile.rgw r=${r} s=${s} c=${c} USERNAME=${USERNAME}
-
-nfs:
-	make -f makefile_configs/Makefile.nfs r=${r} s=${s} c=${c} USERNAME=${USERNAME}
-
-
-#install: role-update install.yml
-#	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} install.yml --tags="install"
-
-#uninstall: role-update uninstall.yml
-#	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} uninstall.yml --tags="uninstall"
-
-#upgrade: role-update upgrade-hosts.yml
-#	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} upgrade-hosts.yml --tags="upgrade"
 
 update:
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ${IP}, -u ${USERNAME} update-hosts.yml

@@ -1,0 +1,71 @@
+---
+- name: Check OS
+  fail: msg="{{ ansible_distribution }} is not supported for this ansible playbook!"
+  when: ansible_distribution != 'Debian' or ansible_distribution != 'Ubuntu'
+
+
+- name: Set Facts for Package Versions
+  import_tasks: set-lfs-facts.yml
+  tags:
+    - build
+
+
+- name: Prepare the Host System
+  import_tasks: host-prep.yml
+  tags:
+    - host-prep
+
+
+- name: Partition the disk for LFS
+  import_tasks: partition.yml
+  tags:
+    - partition
+
+
+- name: Download the LFS Sources Files
+  import_tasks: download-sources.yml
+  tags:
+    - download
+
+
+- name: Perform the Final Preparations
+  import_tasks: final-prep.yml
+  tags:
+    - final-prep
+
+
+#- name: Build the LFS build tools
+#  become: true
+#  become_user: lfs
+#  import_tasks: build-tools.yml
+#  tags:
+#    - build
+#    - gcc
+
+
+# become_user: lfs
+
+- name: Build binutils (stage 1)
+  import_tasks: tools/binutils-stage1.yml
+  tags:
+    - binutils
+
+
+- name: Build GCC (stage 1)
+  import_tasks: tools/gcc-stage1.yml
+  tags:
+    - gcc
+
+
+
+#tags:
+#  - install
+#  - uninstall
+#  - upload
+#  - init
+#  - purge
+#  - add-ceph
+#  - remove-ceph
+#  - add-osd
+#  - remove-osd
+
