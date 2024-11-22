@@ -1,8 +1,8 @@
-# Ansible Playbooks to Build Linux From Scratch
+## Ansible Playbooks to Build Linux From Scratch
 Tested on Ubuntu 22.04.x LTS.
 
-# Instructions
-## Download / Configure / Run LFS Ansible Playbook
+## Instructions
+### Download / Configure / Run LFS Ansible Playbook
 #### 1) Clone LFS Ansible Playbook into your Local machine
 ```
 $ git clone https://github.com/rokmc756/LFS
@@ -84,10 +84,10 @@ $ make bintuils
 $ make gcc
 ```
 
-# Version
+## Version
 This ansible playbook builds initially the [12.2-systemd](http://www.linuxfromscratch.org/lfs/view/12.2-systemd/) latest version of LFS.
 
-# Progress
+## Progress
 - [o] Convert Ansible Galaxy type from Original
 - [x] Configure host build system, including installing dependencies and patching host system quirks
 - [x] Partition, format, and mount the future LFS disk
