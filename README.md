@@ -1,11 +1,9 @@
 ## Introduction What is GPFarmer?
-This ansible playbook to build LFS conveniently and the main purpose of this project is actually very simple for studying Linux From Scratch step by step.
-
+This ansible playbook builds LFS conveniently and the main purpose of this project is actually very simple for studying Linux personally From Scratch step by step.
 
 ## Where is it from and how is it changed?
 It has been developing based on ansible-lfs - https://github.com/sodle/ansible-lfs. sodle! Thanks for sharing it.
 Since it only provide simple playbooks I have been converting it to ansible-galaxy type with make utility.
-
 
 ## Ansible Playbooks to Build Linux From Scratch
 Tested on Ubuntu 22.04.x LTS.
@@ -116,7 +114,7 @@ This ansible playbook builds initially the [12.2-systemd](http://www.linuxfromsc
 - [x] Partition, format, and mount the future LFS disk
 - [x] Download and verify the LFS packages and patches
 - [x] Create the LFS user
-- [ ] Define Automatically the version of software depends on systemd version
+- [ ] Define Automatically the software versions such as gcc,mpc,gmp and so on depends on systemd version
 - [ ] Uninstall LFS and Unmount Buildroot
 - [ ] Build the temporary root
 - [ ] Install the base system
