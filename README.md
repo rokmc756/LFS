@@ -122,4 +122,5 @@ This ansible playbook builds initially the [12.2-systemd](http://www.linuxfromsc
 - [ ] Install the base system
 - [ ] Configure the system
 - [ ] Make the system bootable
+- [ ] Make compatibility for Red Hat Based Linux
 
