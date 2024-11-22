@@ -26,7 +26,7 @@
     dest: "{{ lfs.mnt_dir }}/sources"
 
 
-- name: Create GCC build directory
+- name: Create GCC Build Directory
   become_user: root
   file:
     path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
@@ -39,10 +39,8 @@
     remote_src: yes
     src: "{{ lfs.mnt_dir }}/sources/mpfr-{{ lfs.mpfr_version }}.tar.xz"
     dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
-
     # dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/mpfr"
     # extra_opts: ['--strip-components=1', '--show-stored-names']
-
 
 
 - name: Unpack GMP
@@ -52,10 +50,6 @@
     src: "{{ lfs.mnt_dir }}/sources/gmp-{{ lfs.gmp_version }}.tar.xz"
     dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
 
-    # dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/gmp"
-    # extra_opts: ['--strip-components=1', '--show-stored-names']
-
-
 
 - name: Unpack MPC
   become_user: root
@@ -63,9 +57,6 @@
     remote_src: yes
     src: "{{ lfs.mnt_dir }}/sources/mpc-{{ lfs.mpc_version }}.tar.gz"
     dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
-
-    # dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/mpc"
-    # extra_opts: ['--strip-components=1', '--show-stored-names']
 
 
 - name: Copy LFS Scripts for GCC Build
@@ -77,21 +68,18 @@
   register: copy_gcc_build_scripts
   with_items:
     - "gcc-stage1-prep.sh"
-  #  dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/scripts/{{ item }}"
 - debug: msg={{ copy_gcc_build_scripts }}
 
 
-- name: Run a script to prepare for the GCC build
+- name: Run a Script to Prepare for the GCC Build
   become_user: root
   shell: ./gcc-stage1-prep.sh
   ignore_errors: true
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
 
-  # shell: scripts/gcc-stage1-prep.sh
 
-
-- name: Configure the GCC build
+- name: Configure the GCC Build
   become_user: root
   shell: |
     export LFS_TGT=$(uname -m)-lfs-linux-gnu
@@ -119,7 +107,7 @@
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
 
 
-- name: Clean up the sources
+- name: Clean Up the Sources
   become_user: root
   file:
     path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"

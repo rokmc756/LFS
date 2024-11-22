@@ -1,57 +1,20 @@
-- name: Update everything
+- name: Update Everything
   apt:
     upgrade: dist
     update_cache: yes
     autoclean: yes
     autoremove: yes
 
-    #- name: Install Ansible requirements
-    #  apt:
-    #    name: "{{ packages }}"
-    #    state: latest
-    #  vars:
-    #    packages:
-    #      - dconf-cli
 
-
-- name: Install LFS dependencies
+- name: Install LFS Dependencies
   apt:
     name: "{{ packages }}"
     state: latest
   vars:
-    packages:
-      - bash
-      - binutils
-      - binutils-dev
-      - bison
-      - libbison-dev
-      - bzip2
-      - coreutils
-      - diffutils
-      - findutils
-      - gawk
-      - gcc
-      - gcc-multilib
-      - g++
-      - g++-multilib
-      - libc6
-      - libc6-dev
-      - grep
-      - gzip
-      - linux-headers-generic
-      - m4
-      - make
-      - patch
-      - perl
-      - libperl-dev
-      - sed
-      - tar
-      - libtar-dev
-      - texinfo
-      - xz-utils
+    packages: "{{ install_pkgs }}"
 
 
-- name: Disable Ubuntu's use of dash as the default shell instead of bash
+- name: Disable Ubuntu's Use of Dash as the Default Shell Instead of Bash
   debconf:
     name: dash
     question: dash/sh
@@ -59,17 +22,32 @@
     value: false
 
 
-- name: Reconfigure dash with the new setting
+- name: Reconfigure Dash With the New Setting
   command: /sbin/dpkg-reconfigure dash -p critical
 
 
-- name: Disable Ubuntu's annoying habit of automounting newly formatted disks
+- name: Disable Ubuntu's Annoying Habit of Automounting Newly Formatted Disks
   command: gsettings set org.gnome.desktop.media-handling automount false
 
 
-- name: Run the version check script
-  script: scripts/version-check.sh
+- name: Copy Version Check Scripts
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ lfs.mnt_dir }}/{{ item }}"
+    mode: 0755
+  register: copy_version_check_scripts
+  with_items:
+    - "version-check.sh"
+- debug: msg={{ copy_version_check_scripts }}
+
+
+- name: Create the LFS User's Dotfiles
+  shell: |
+    ./version-check.sh
   register: version_check
+  args:
+    executable: /bin/bash
+    chdir: "{{ lfs.mnt_dir }}/"
   failed_when: >
     version_check.rc != 0 or
     'ERROR' in version_check.stdout or

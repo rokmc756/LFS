@@ -1,15 +1,15 @@
-rh_common_pkgs: "dconf-editor,automake,autoconf,sshpass"
+rh_common_pkgs: "dconf-cli,dconf-editor,automake,autoconf,sshpass"
 rh_common_devel_pkgs: "git,libisl-devel"
 
 rh7_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
 rh8_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
 rh9_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
 
-suse_common_pkgs: "dconf-editor,automake,autoconf,sshpass"
+suse_common_pkgs: "dconf-cli,dconf-editor,automake,autoconf,sshpass"
 suse_common_devel_pkgs: "git"
 suse15_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
 
-ubt_common_pkgs: "dconf-editor,automake,autoconf,sshpass"
+ubt_common_pkgs: "dconf-cli,dconf-editor,automake,autoconf,sshpass"
 ubt_common_devel_pkgs: "git,libisl-dev"
 
 ubt20_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"

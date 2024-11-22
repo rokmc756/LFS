@@ -7,7 +7,6 @@
   with_items:
     - "{{ lfs.mnt_dir }}/scripts"
     - "{{ lfs.mnt_dir }}/tools"
-    # - "{{ lfs.tools_dir }}"
 
 
 - name: Link $LFS/tools to /tools
@@ -62,7 +61,4 @@
   shell: scripts/lfs-dotfiles.sh
   args:
     chdir: "{{ lfs.mnt_dir }}/"
-
-  # script: scripts/lfs-dotfiles.sh
-  # shell: {{ lfs.mnt_dir }}/scripts/{{ item }}.j2"
 

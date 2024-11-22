@@ -1,0 +1,24 @@
+rh_common_pkgs: "dconf-cli,dconf-editor,automake,autoconf,sshpass"
+rh_common_devel_pkgs: "git,libisl-devel,bash,binutils,binutils-dev,bison,libbison-dev,bzip2,coreutils,diffutils,findutils,gawk,gcc,gcc-multilib,g++,g++-multilib,libc6,libc6-dev,grep,gzip,linux-headers-generic,m4,make,patch,perl,libperl-dev,sed,tar,libtar-dev,texinfo,xz-utils"
+
+rh7_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+rh8_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+rh9_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+
+suse_common_pkgs: "dconf-cli,dconf-editor,automake,autoconf,sshpass"
+suse_common_devel_pkgs: "git,bash,binutils,binutils-dev,bison,libbison-dev,bzip2,coreutils,diffutils,findutils,gawk,gcc,gcc-multilib,g++,g++-multilib,libc6,libc6-dev,grep,gzip,linux-headers-generic,m4,make,patch,perl,libperl-dev,sed,tar,libtar-dev,texinfo,xz-utils"
+suse15_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+
+ubt_common_pkgs: "dconf-cli,dconf-editor,automake,autoconf,sshpass"
+ubt_common_devel_pkgs: "git,libisl-dev,bash,binutils,binutils-dev,bison,libbison-dev,bzip2,coreutils,diffutils,findutils,gawk,gcc,gcc-multilib,g++,g++-multilib,libc6,libc6-dev,grep,gzip,linux-headers-generic,m4,make,patch,perl,libperl-dev,sed,tar,libtar-dev,texinfo,xz-utils"
+
+ubt20_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+ubt22_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+ubt23_common_devel_pkgs: "automake-1.16,libglib2.0-bin,libisl23"
+
+official_rh_pkgs: "pdsh"
+official_ubt_pkgs: "pdsh"
+official_suse_pkgs: "pdsh"
+
+update_cache: false
+upgrade_packages: false
