@@ -1,43 +1,7 @@
 ---
-# - hosts: build_host
-#- hosts: localhost
-#  become: true
-#  # vars:
-#  #  lfs_root: /mnt/lfs
-#  #  binutils_version: "2.43.1"
-#  #  gcc_version: "14.2.0"
-#  #  glibc_version: "2.35"
-#  #  mpc_version: "1.3.1"
-#  #  mpfr_version: "4.2.1"
-#  #  gmp_version: "6.3.0"
-#  environment:
-#    LFS: "{{ lfs_root }}"
-#
-#  tasks:
-#    - name: Prepare the host system
-#      include: host_prep.yml
-#
-#    - name: Partition the disk for LFS
-#      include: partition.yml
-#
-#    - name: Download the LFS sources
-#      include: download_sources.yml
-#
-#    - name: Perform the final preparations
-#      include: final_prep.yml
-#
-#    - name: Build the LFS build tools
-#      become: true
-#      become_user: root
-#      include: build_tools.yml
-#      # become_user: lfs
-
-
 - hosts: ubt22-lfs
   become: yes
   vars:
     print_debug: true
-    # lfs_root: /mnt/lfs
   roles:
     - { role: lfs }
-
