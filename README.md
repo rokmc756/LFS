@@ -71,6 +71,20 @@ lfs:
 ```
 #### 6) Set hosts and role name
 ```
+$ vi init-hosts.yml
+- hosts: all
+  become: true
+  roles:
+    - init-hosts
+```
+
+#### 7) Initialize or Uninitialize Build Host
+```
+$ make init   # or uninit
+```
+
+#### 8) Set hosts and role name
+```
 $ vi setup-lfs.yml
 ---
 - hosts: ubt22-lfs
@@ -81,7 +95,7 @@ $ vi setup-lfs.yml
     - { role: lfs }
 ```
 
-#### 7) Build LFS at once or seperately
+#### 9) Build LFS at once or seperately
 ```
 $ make build
 or
