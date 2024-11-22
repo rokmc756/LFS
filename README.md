@@ -88,7 +88,7 @@ $ make gcc
 This ansible playbook builds initially the [12.2-systemd](http://www.linuxfromscratch.org/lfs/view/12.2-systemd/) latest version of LFS.
 
 ## Progress
-- [o] Convert Ansible Galaxy type from Original
+- [x] Convert Ansible Galaxy type from Original
 - [x] Configure host build system, including installing dependencies and patching host system quirks
 - [x] Partition, format, and mount the future LFS disk
 - [x] Download and verify the LFS packages and patches
