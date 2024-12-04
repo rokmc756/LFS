@@ -57,3 +57,17 @@
     - gcc
     - build
 
+
+- name: Build Linux Kernel Header
+  import_tasks: tools/linux-headers.yml
+  tags:
+    - headers
+    - build
+
+
+- name: Build GLIBC ( Stage )
+  import_tasks: tools/glibc-stage.yml
+  tags:
+    - glibc
+    - build
+

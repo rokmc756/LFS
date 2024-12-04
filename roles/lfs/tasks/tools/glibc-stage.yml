@@ -1,0 +1,129 @@
+---
+- name: Unpack GLIBC
+  become_user: root
+  unarchive:
+    remote_src: yes
+    src: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+
+
+- name: X
+  become_user: root
+  shell: |
+    case $(uname -m) in
+      i?86)
+        ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
+      ;;
+      x86_64)
+        ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64
+        ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
+      ;;
+    esac
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/"
+
+
+- name: X
+  become_user: root
+  shell: |
+    patch -Np1 -i ../glibc-2.40-fhs-1.patch
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/"
+
+
+
+- name: Create GLIBC Build Directory
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
+    state: directory
+
+
+- name: X
+  become_user: root
+  shell: |
+    echo "rootsbindir=/usr/sbin" > configparms
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/"
+
+
+- name: X
+  become_user: root
+  shell: |
+    ../configure                       \
+    --prefix=/usr                      \
+    --host=$LFS_TGT                    \
+    --build=$(../scripts/config.guess) \
+    --enable-kernel=6.10               \
+    --with-headers=$LFS/usr/include    \
+    libc_cv_slibdir=/usr/lib
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+
+
+- name: X
+  become_user: root
+  shell: |
+    make && make DESTDIR=$LFS install
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: X
+  become_user: root
+  shell: |
+    sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: X
+  become_user: root
+  shell: |
+    echo 'int main(){}' | gcc -xc -
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: X
+  become_user: root
+  shell: |
+    readelf -l a.out | grep ld-linux
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Clean Up the Temp Binary
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/a.out"
+    state: absent
+
+
+- name: X
+  become_user: root
+  shell: |
+    $LFS/tools/libexec/gcc/$LFS_TGT/14.2.0/install-tools/mkheaders
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+

@@ -1,4 +1,4 @@
-## Introduction What is GPFarmer?
+## Introduction
 This ansible playbook builds LFS conveniently and the main purpose of this project is actually very simple for studying Linux personally From Scratch step by step.
 
 ## Where is it from and how is it changed?

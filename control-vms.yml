@@ -11,6 +11,5 @@
         state: "{{ power_state }}"
       loop:
         - rk9-freeipa
-        - ubt18-lfs
         - ubt22-lfs
-        - "VMware vCenter Server"
+        # - "VMware vCenter Server"

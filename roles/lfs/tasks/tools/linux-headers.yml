@@ -1,0 +1,53 @@
+---
+- name: Unpack Kernel
+  become_user: root
+  unarchive:
+    remote_src: yes
+    src: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+
+
+- name: X
+  become_user: root
+  shell: |
+    make mrproper
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}/"
+
+
+- name: X
+  become_user: root
+  shell: |
+    make headers
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}/"
+
+
+- name: X
+  become_user: root
+  shell: |
+    find usr/include -type f ! -name '*.h' -delete
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}/"
+
+
+- name: X
+  become_user: root
+  shell: |
+    cp -rv usr/include $LFS/usr
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}/"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Clean Up the Kernel Sources
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}"
+    state: absent
+

@@ -79,14 +79,44 @@
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
 
 
+#- name: Configure the GCC Build
+#  become_user: root
+#  shell: |
+#    export LFS_TGT=$(uname -m)-lfs-linux-gnu
+#    ../configure --target=$LFS_TGT --prefix={{ lfs.tools_dir }} --with-glibc-version={{ lfs.glibc_version }} --with-sysroot=$LFS \
+#    --with-newlib --without-headers --with-local-prefix={{ lfs.tools_dir }} --with-native-system-header-dir={{ lfs.tools_dir }}/include \
+#    --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic \
+#    --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
+#  args:
+#    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+#  environment:
+#    LFS: "{{ lfs.mnt_dir }}"
+
+
 - name: Configure the GCC Build
   become_user: root
   shell: |
     export LFS_TGT=$(uname -m)-lfs-linux-gnu
-    ../configure --target=$LFS_TGT --prefix={{ lfs.tools_dir }} --with-glibc-version={{ lfs.glibc_version }} --with-sysroot=$LFS \
-    --with-newlib --without-headers --with-local-prefix={{ lfs.tools_dir }} --with-native-system-header-dir={{ lfs.tools_dir }}/include \
-    --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic \
-    --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
+    ../configure                                 \
+    --target=$LFS_TGT                            \
+    --prefix={{ lfs.tools_dir }}                 \
+    --with-glibc-version={{ lfs.glibc_version }} \
+    --with-sysroot=$LFS                          \
+    --with-newlib                                \
+    --without-headers                            \
+    --enable-default-pie                         \
+    --enable-default-ssp                         \
+    --disable-nls                                \
+    --disable-shared                             \
+    --disable-multilib                           \
+    --disable-threads                            \
+    --disable-libatomic                          \
+    --disable-libgomp                            \
+    --disable-libquadmath                        \
+    --disable-libssp                             \
+    --disable-libvtv                             \
+    --disable-libstdcxx                          \
+    --enable-languages=c,c++
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
@@ -112,4 +142,5 @@
   file:
     path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
     state: absent
+
 

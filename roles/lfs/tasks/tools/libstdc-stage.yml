@@ -1,0 +1,60 @@
+---
+- name: Unpack GCC
+  become_user: root
+  unarchive:
+    remote_src: yes
+    src: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+
+
+- name: Create GCC Build Directory
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+    state: directory
+
+
+- name: Configure the Libstdc++ Build
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu \
+    ../libstdc++-v3/configure       \
+    --host=$LFS_TGT                 \
+    --build=$(../config.guess)      \
+    --prefix=/usr                   \
+    --disable-multilib              \
+    --disable-nls                   \
+    --disable-libstdcxx-pch         \
+    --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/14.2.0
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Build Libstdc++
+  become_user: root
+  shell: make -j $(echo "$(cat /proc/cpuinfo | grep processor | tail -1 | awk '{print $3}') - 1" | bc)
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+
+
+- name: Install Libstdc++
+  become_user: root
+  shell: make DESTDIR=$LFS install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Clean Up Libraries
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/usr/lib/lib{{ item }}.la"
+    state: absent
+  with_items:
+    - "stdc++"
+    - "stdc++fs"
+    - "supc++"
+
