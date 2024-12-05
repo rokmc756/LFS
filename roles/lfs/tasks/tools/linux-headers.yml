@@ -7,7 +7,7 @@
     dest: "{{ lfs.mnt_dir }}/sources"
 
 
-- name: X
+- name: Make sure there are no stale files embedded in the package
   become_user: root
   shell: |
     make mrproper
@@ -16,7 +16,8 @@
     chdir: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}/"
 
 
-- name: X
+# The recommended make target “headers_install” cannot be used, because it requires rsync, which may not be available.
+- name: Now extract the user-visible kernel headers from the source.
   become_user: root
   shell: |
     make headers
@@ -25,7 +26,7 @@
     chdir: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}/"
 
 
-- name: X
+- name: The headers are first placed in ./usr
   become_user: root
   shell: |
     find usr/include -type f ! -name '*.h' -delete
@@ -34,7 +35,7 @@
     chdir: "{{ lfs.mnt_dir }}/sources/linux-{{ lfs.kernel_version }}/"
 
 
-- name: X
+- name: Copied to the needed location.
   become_user: root
   shell: |
     cp -rv usr/include $LFS/usr

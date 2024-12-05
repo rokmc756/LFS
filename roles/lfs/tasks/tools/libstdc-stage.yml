@@ -17,14 +17,14 @@
 - name: Configure the Libstdc++ Build
   become_user: root
   shell: |
-    export LFS_TGT=$(uname -m)-lfs-linux-gnu \
-    ../libstdc++-v3/configure       \
-    --host=$LFS_TGT                 \
-    --build=$(../config.guess)      \
-    --prefix=/usr                   \
-    --disable-multilib              \
-    --disable-nls                   \
-    --disable-libstdcxx-pch         \
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu &&
+    ../libstdc++-v3/configure                                   \
+    --host=$LFS_TGT                                             \
+    --build=$(../config.guess)                                  \
+    --prefix=/usr                                               \
+    --disable-multilib                                          \
+    --disable-nls                                               \
+    --disable-libstdcxx-pch                                     \
     --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/14.2.0
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"

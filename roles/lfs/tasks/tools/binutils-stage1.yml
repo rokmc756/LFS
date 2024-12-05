@@ -20,7 +20,7 @@
 - name: Configure the Binutils Build
   become_user: root
   shell: |
-    export LFS_TGT=$(uname -m)-lfs-linux-gnu
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu &&
     ../configure --prefix={{ lfs.tools_dir }} --with-sysroot=$LFS --with-lib-path={{ lfs.tools_dir }}/lib --target=$LFS_TGT --disable-nls --disable-werror
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
