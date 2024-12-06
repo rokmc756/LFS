@@ -1,17 +1,58 @@
 ---
-- name: Unpack GCC
-  become_user: root
-  unarchive:
-    remote_src: yes
-    src: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}.tar.xz"
-    dest: "{{ lfs.mnt_dir }}/sources"
+#- name: Unpack GCC
+#  become_user: root
+#  unarchive:
+#    remote_src: yes
+#    src: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}.tar.xz"
+#    dest: "{{ lfs.mnt_dir }}/sources"
+#
+#
+#- name: Create GCC Build Directory
+#  become_user: root
+#  file:
+#    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+#    state: directory
+#
+#
+#- name: Unpack MPFR
+#  become_user: root
+#  unarchive:
+#    remote_src: yes
+#    src: "{{ lfs.mnt_dir }}/sources/mpfr-{{ lfs.mpfr_version }}.tar.xz"
+#    dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/mpfr"
+#    extra_opts: ['--strip-components=1', '--show-stored-names']
+#    # dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
+#
+#
+#- name: Unpack GMP
+#  become_user: root
+#  unarchive:
+#    remote_src: yes
+#    src: "{{ lfs.mnt_dir }}/sources/gmp-{{ lfs.gmp_version }}.tar.xz"
+#    dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/gmp"
+#    extra_opts: ['--strip-components=1', '--show-stored-names']
+#
+#
+#- name: Unpack MPC
+#  become_user: root
+#  unarchive:
+#    remote_src: yes
+#    src: "{{ lfs.mnt_dir }}/sources/mpc-{{ lfs.mpc_version }}.tar.gz"
+#    dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/mpc"
+#    extra_opts: ['--strip-components=1', '--show-stored-names']
 
 
-- name: Create GCC Build Directory
+- name: X
   become_user: root
-  file:
-    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
-    state: directory
+  shell: |
+    case $(uname -m) in
+    x86_64)
+      sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
+    ;;
+    esac
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
 
 
 - name: Configure the Libstdc++ Build

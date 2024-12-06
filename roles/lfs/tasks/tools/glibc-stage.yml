@@ -28,14 +28,15 @@
     LFS: "{{ lfs.mnt_dir }}"
 
 
-# Some of the Glibc programs use the non-FHS-compliant /var/db directory to store their runtime data. Apply the following patch to make such programs store their runtime data in the FHS-compliant locations
+# Some of the Glibc programs use the non-FHS-compliant /var/db directory to store their runtime data.
+# Apply the following patch to make such programs store their runtime data in the FHS-compliant locations
 - name: Apply the Following Patch to Make Such Programs Store Their Runtime Data in the FHS-Compliant Locations
   become_user: root
   shell: |
     patch -Np1 -i ../glibc-2.40-fhs-1.patch
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}"
     executable: /bin/bash
 
 
@@ -52,7 +53,7 @@
     echo "rootsbindir=/usr/sbin" > configparms
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
     executable: /bin/bash
   # echo "rootsbindir=/usr/sbin" > {{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/configparms
 
@@ -70,7 +71,7 @@
     libc_cv_slibdir=/usr/lib
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
     executable: /bin/bash
   environment:
     LFS: "{{ lfs.mnt_dir }}"
@@ -82,10 +83,11 @@
     make && make DESTDIR=$LFS install
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
     executable: /bin/bash
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+  #  make && make DESTDIR=$LFS install
 
 
 - name: Fix a Hard Coded Path to the Executable Loader in the LDD Script
@@ -94,7 +96,7 @@
     sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
     executable: /bin/bash
   environment:
     LFS: "{{ lfs.mnt_dir }}"
@@ -106,7 +108,7 @@
     echo 'int main(){}' | gcc -xc -
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
     executable: /bin/bash
   environment:
     LFS: "{{ lfs.mnt_dir }}"
@@ -118,7 +120,7 @@
     readelf -l a.out | grep ld-linux
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
     executable: /bin/bash
   environment:
     LFS: "{{ lfs.mnt_dir }}"
@@ -138,7 +140,7 @@
     $LFS/tools/libexec/gcc/$LFS_TGT/{{ lfs.gcc_version }}/install-tools/mkheaders
   ignore_errors: true
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/"
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
     executable: /bin/bash
   environment:
     LFS: "{{ lfs.mnt_dir }}"

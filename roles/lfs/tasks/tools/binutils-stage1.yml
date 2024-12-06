@@ -1,3 +1,4 @@
+---
 - name: Unpack Binutils
   become_user: root
   unarchive:
