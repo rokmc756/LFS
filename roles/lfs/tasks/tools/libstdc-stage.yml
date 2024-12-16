@@ -42,18 +42,18 @@
 #    extra_opts: ['--strip-components=1', '--show-stored-names']
 
 
-#- name: X
-#  become_user: root
-#  shell: |
-#    case $(uname -m) in
-#    x86_64)
-#      sed -e '/m64=/s/lib64/..\/usr\/lib/' -i.orig gcc/config/i386/t-linux64
-#    ;;
-#    esac
-#  ignore_errors: true
-#  args:
-#    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
-#  # sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
+- name: X
+  become_user: root
+  shell: |
+    case $(uname -m) in
+    x86_64)
+      sed -e '/m64=/s/lib64/..\/usr\/lib/' -i.orig gcc/config/i386/t-linux64
+    ;;
+    esac
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
+  # sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
 
 
 - name: Configure the Libstdc++ Build
