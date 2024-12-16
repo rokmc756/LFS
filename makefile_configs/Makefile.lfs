@@ -1,0 +1,34 @@
+lfs:
+	@if [ "${r}" = "install" ]; then\
+                if [ ! -z ${r} ] && [ "${s}" = "mgr" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{install_mgr: True}' --tags='install';\
+                elif [ ! -z ${r} ] && [ "${s}" = "cctt" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{install_cctt: True}' --tags='install';\
+                elif [ ! -z ${r} ] && [ "${s}" = "bootstrap" ]; then\
+                        ansible-playbook -i ansible-hosts-bootstrap --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{install_bootstrap: True}' --tags='install';\
+                elif [ ! -z ${r} ] && [ "${s}" = "master" ]; then\
+                        ansible-playbook -i ansible-hosts-master --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{install_master: True}' --tags='install';\
+                elif [ ! -z ${r} ] && [ "${s}" = "network" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{install_network: True}' --tags='install';\
+                else\
+			echo "No Actions for Install Linux From Scratch";\
+                fi;\
+	elif [ "${r}" = "uninstall" ]; then\
+                if [ ! -z ${r} ] && [ "${s}" = "mgr" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_mgr: True}' --tags='uninstall';\
+                elif [ ! -z ${r} ] && [ "${s}" = "cctt" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_cctt: True}' --tags='uninstall';\
+                elif [ ! -z ${r} ] && [ "${s}" = "bootstrap" ]; then\
+                        ansible-playbook -i ansible-hosts-bootstrap  --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_bootstrap: True}' --tags='uninstall';\
+                elif [ ! -z ${r} ] && [ "${s}" = "master" ]; then\
+                        ansible-playbook -i ansible-hosts-master --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_master: True}' --tags='uninstall';\
+                elif [ ! -z ${r} ] && [ "${s}" = "network" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_network: True}' --tags='uninstall';\
+                else\
+			echo "No Actions for Uninstall Linux From Scratch";\
+                fi;\
+	else\
+		echo "No Actions for OKD";\
+		exit;\
+	fi
+

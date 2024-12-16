@@ -20,8 +20,6 @@
     remote_src: yes
     src: "{{ lfs.mnt_dir }}/sources/mpfr-{{ lfs.mpfr_version }}.tar.xz"
     dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
-    # dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/mpfr"
-    # extra_opts: ['--strip-components=1', '--show-stored-names']
 
 
 - name: Unpack GMP
@@ -48,27 +46,13 @@
     mode: 0755
   register: copy_gcc_build_scripts
   with_items:
-    - "gcc-stage1-prep.sh"
+    - "gcc-stage2-prep.sh"
 - debug: msg={{ copy_gcc_build_scripts }}
 
 
-- name: Change the default directory name for 64-bit libraries to /usr/lib
+- name: Run a Script to Prepare for the GCC Build
   become_user: root
-  shell: |
-    case $(uname -m) in
-    x86_64)
-      sed -e '/m64=/s/lib64/..\/usr\/lib/' -i.orig gcc/config/i386/t-linux64
-    ;;
-    esac
-  ignore_errors: true
-  args:
-    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
-
-
-- name: Allow building these libraries with POSIX threads support to Override the building rule of libgcc and libstdc++ headers
-  become_user: root
-  shell: |
-    sed '/thread_header =/s/@.*@/gthr-posix.h/' -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
+  shell: ./gcc-stage2-prep.sh
   ignore_errors: true
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
@@ -77,60 +61,59 @@
 - name: Configure the GCC Build
   become_user: root
   shell: |
-    export LFS_TGT=$(uname -m)-lfs-linux-gnu && ../configure \
-    --build=$(../config.guess) \
-    --host=$LFS_TGT \
-    --target=$LFS_TGT \
-    LDFLAGS_FOR_TARGET=-L$PWD/$LFS_TGT/libgcc \
-    --prefix=/usr \
-    --with-build-sysroot=$LFS \
-    --enable-default-pie \
-    --enable-default-ssp \
-    --disable-nls \
-    --disable-multilib \
-    --disable-libatomic \
-    --disable-libgomp \
-    --disable-libquadmath \
-    --disable-libsanitizer \
-    --disable-libssp \
-    --disable-libvtv \
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu  &&   \
+    ../configure                                   \
+    --build=$(../config.guess)                     \
+    --host=$LFS_TGT                                \
+    --target=$LFS_TGT                              \
+    LDFLAGS_FOR_TARGET=-L$PWD/$LFS_TGT/libgcc      \
+    --prefix=/usr                                  \
+    --with-build-sysroot=$LFS                      \
+    --enable-default-pie                           \
+    --enable-default-ssp                           \
+    --disable-nls                                  \
+    --disable-multilib                             \
+    --disable-libatomic                            \
+    --disable-libgomp                              \
+    --disable-libquadmath                          \
+    --disable-libsanitizer                         \
+    --disable-libssp                               \
+    --disable-libvtv                               \
     --enable-languages=c,c++
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
 - name: Build GCC
   become_user: root
-  shell: |
-    make -j {{ use_cores }}
+  shell: make -j {{ use_cores }}
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
 - name: Install GCC
   become_user: root
-  shell: |
-    make -j {{ use_cores }} DESTDIR=$LFS install
+  shell: make -j {{ use_cores }} DESTDIR=$LFS install
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
-
-# As a finishing touch, create a utility symlink. Many programs and scripts run cc instead of gcc,
-# which is used to keep programs generic and therefore usable on all kinds of UNIX systems where the GNU C compiler is not always installed.
-# Running cc leaves the system administrator free to decide which C compiler to install:
 - name: Create a Utility Symlink
-  become_user: root
-  shell: |
-    ln -sv gcc $LFS/usr/bin/cc
-  args:
-    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
-  environment:
-    LFS: "{{ lfs.mnt_dir }}"
+  file:
+    src: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/gcc"
+    dest: "{{ lfs.mnt_dir}}/usr/bin/cc"
+    owner: root
+    group: root
+    state: link
 
 
 #- name: Clean Up the Sources

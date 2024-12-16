@@ -9,10 +9,7 @@
     remote_src: yes
 
 
-# Binutils building system relies on an shipped libtool copy to link against internal static libraries,
-# but the libiberty and zlib copies shipped in the package do not use libtool.
-# This inconsistency may cause produced binaries mistakenly linked against libraries from the host distro.
-- name: Link against internal static libraries
+- name: Link against Internal Static Libraries
   become_user: root
   shell: |
     sed '6009s/$add_dir//' -i ltmain.sh
@@ -29,44 +26,68 @@
     group: "{{ lfs.group }}"
 
 
-- name: Configure the Binutils Build
+# export LFS_TGT=$(uname -m)-lfs-linux-gnu && \
+# ../configure --prefix=/usr --build=$(../config.guess) --host=$LFS_TGT  --disable-nls \
+# ../configure --prefix={{ lfs.tools_dir }} \
+- name: Configure the Binutils to Build
   become_user: root
   shell: |
-    export LFS_TGT=$(uname -m)-lfs-linux-gnu && ../configure --prefix=/usr --build=$(../config.guess) \
-    --host=$LFS_TGT --disable-nls --enable-shared --enable-gprofng=no --disable-werror --enable-64-bit-bfd \
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu && \
+    ../configure --prefix=/usr \
+    --build=$(../config.guess) --host=$LFS_TGT  --disable-nls \
+    --enable-shared --enable-gprofng=no --disable-werror --enable-64-bit-bfd \
     --enable-new-dtags --enable-default-hash-style=gnu
+  register: configure_binutils
   args:
+    executable: /bin/bash
     chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
+
+- debug: msg={{ configure_binutils }}
 
 
 - name: Build Binutils
   become_user: root
-  shell: |
-    make -j {{ use_cores }}
+  shell: make -j {{ use_cores }}
+  register: build_binutils
   args:
+    executable: /bin/bash
     chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
+- debug: msg={{ build_binutils }}
 
 
 - name: Install Binutils
   become_user: root
-  shell: |
-    make -j {{ use_cores }} install
+  shell: make -j {{ use_cores }} DESTDIR=$LFS install
+  register: install_binutils
   args:
+    executable: /bin/bash
     chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
+- debug: msg={{ install_binutils }}
 
 
-- name: Remove the libtool archive files because they are harmful for cross compilation, and remove unnecessary static libraries
+- name: Remove the Libtool Archive Files
   become_user: root
-  shell: |
-    rm -v $LFS/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
-  args:
-    chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}"
-  environment:
-    LFS: "{{ lfs.mnt_dir }}"
+  file:
+    path: "{{ lfs.mnt_dir }}/usr/lib/{{ item }}"
+    state: absent
+  with_items:
+    - libbfd.a"
+    - libbfd.la"
+    - libctf.a"
+    - libctf.la"
+    - libctf-nobfd.a"
+    - libctf-nobfd.la"
+    - libopcodes.a,"
+    - libopcodes.la"
+    - libsframe.a"
+    - libsframe.la"
 

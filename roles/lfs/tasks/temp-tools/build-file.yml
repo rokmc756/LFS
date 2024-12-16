@@ -73,10 +73,17 @@
 
 - name: Remove the Libtool Archive File
   become_user: root
-  shell: |
-    rm -v $LFS/usr/lib/libmagic.la
-  args:
-    chdir: "{{ lfs.mnt_dir }}/sources/file-{{ lfs.file_version }}"
-  environment:
-    LFS: "{{ lfs.mnt_dir }}"
+  file:
+    path: "{{ lfs.mnt_dir }}/usr/lib/libmagic.la"
+    state: absent
+
+
+#- name: Remove the Libtool Archive File
+#  become_user: root
+#  shell: |
+#    rm -v $LFS/usr/lib/libmagic.la
+#  args:
+#    chdir: "{{ lfs.mnt_dir }}/sources/file-{{ lfs.file_version }}"
+#  environment:
+#    LFS: "{{ lfs.mnt_dir }}"
 

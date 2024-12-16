@@ -54,13 +54,22 @@
     mode: "0755"
 
 
-- name: Link Bash
-  become_user: root
-  shell: |
-    ln -sv bash $LFS/bin/sh
-  args:
-    chdir: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}"
-  environment:
-    LFS: "{{ lfs.mnt_dir }}"
+- name: Create a symbolic bash link
+  file:
+    src: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}/bash"
+    dest: "{{ lfs.mnt_dir}}/bin/sh"
+    owner: root
+    group: root
+    state: link
+
+
+#- name: Create a symbolic bash link
+#  become_user: root
+#  shell: |
+#    ln -sv bash $LFS/bin/sh
+#  args:
+#    chdir: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}"
+#  environment:
+#    LFS: "{{ lfs.mnt_dir }}"
 
 

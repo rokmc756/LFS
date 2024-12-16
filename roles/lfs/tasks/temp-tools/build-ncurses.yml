@@ -98,14 +98,23 @@
 
 
 # The libncurses.so library is needed by a few packages we will build soon. We create this symlink to use libncursesw.so as a replacement.
-- name: Create this symlink to use libncursesw.so as a replacement
-  become_user: root
-  shell: |
-    ln -sv libncursesw.so $LFS/usr/lib/libncurses.so
-  args:
-    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}"
-  environment:
-    LFS: "{{ lfs.mnt_dir }}"
+#- name: Create this symlink to use libncursesw.so as a replacement
+#  become_user: root
+#  shell: |
+#    ln -sv libncursesw.so $LFS/usr/lib/libncurses.so
+#  args:
+#  environment:
+#    LFS: "{{ lfs.mnt_dir }}"
+
+
+# - name: Create a symbolic bash link
+- name: Create this symlink to use libncursesw.so as a Replacement
+  file:
+    src: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}/lib/libncursesw.so"
+    dest: "{{ lfs.mnt_dir }}/usr/lib/libncurses.so"
+    owner: root
+    group: root
+    state: link
 
 
 # The header file curses.h contains the definition of various Ncurses data structures.

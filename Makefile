@@ -36,6 +36,9 @@ init: init-hosts.yml
 uninit: init-hosts.yml
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} init-hosts.yml --tags="uninit"
 
+lfs:
+	make -f ./makefile_configs/Makefile.lfs r=${r} s=${s} c=${c} USERNAME=${USERNAME}
+
 build: setup-lfs.yml
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="build"
 
@@ -54,8 +57,15 @@ env: setup-lfs.yml
 binutils: setup-lfs.yml
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="binutils"
 
+binutils2: setup-lfs.yml
+	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="binutils2"
+
 gcc: setup-lfs.yml
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="gcc"
+
+gcc2: setup-lfs.yml
+	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="gcc2"
+
 
 headers: setup-lfs.yml
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="headers"

@@ -17,6 +17,22 @@
     - glibc
     - libstdc
     - temp-tools
+    - install
+    - uninstall
+    - binutils2
+    - gcc2
+
+
+- name: Build Binutils ( stage 2 )
+  import_tasks: temp-tools/binutils-stage2.yml
+  tags:
+    - binutils2
+
+
+- name: Build GCC ( Stage 2 )
+  import_tasks: temp-tools/gcc-stage2.yml
+  tags:
+    - gcc2
 
 
 - name: Prepare the Host System
@@ -82,9 +98,22 @@
     - build
 
 
+#- name: Build Cross Compile Temp Tools
+#  import_tasks: build-temp-tools.yml
+#  tags:
+#    - temp-tools
+#    - build
+
+
+
 - name: Build Cross Compile Temp Tools
-  import_tasks: build-temp-tools.yml
-  tags:
-    - temp-tools
-    - build
+  import_tasks: install-cctt.yml
+  tags: install
+  when: install_cctt is defined and install_cctt == true
+
+
+- name: Remove Build Directory for Cross Compile Temp Tools
+  import_tasks: uninstall-cctt.yml
+  tags: uninstall
+  when: uninstall_cctt is defined and uninstall_cctt == true
 

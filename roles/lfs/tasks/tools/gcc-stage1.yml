@@ -1,16 +1,3 @@
-#- name: Create the Sources Directory
-#  become_user: root
-#  file:
-#    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/{{ item }}"
-#    state: directory
-#    mode: 0755
-#  with_items:
-#    - mpfr
-#    - gmp
-#    - mpc
-#    - scripts
-
-
 #- name: Create Symbolic Link
 #  file:
 #   src: "/opt/application/i99/{{ SOURCE_FOLDER }}/"

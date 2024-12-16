@@ -42,3 +42,13 @@
 - set_fact:
     use_cores: "{{ get_cores.stdout }}"
 
+
+- name: Get CPU Arch for Compiler
+  shell: |
+    echo "$(uname -m)"
+  register: get_cpu_arch
+
+
+- set_fact:
+    cpu_arch: "{{ get_cpu_arch.stdout }}"
+

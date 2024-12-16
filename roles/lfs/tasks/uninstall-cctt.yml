@@ -1,0 +1,28 @@
+---
+- name: Remove Extracted Build Directory
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/{{ item }}"
+    state: absent
+  with_items:
+    - "binutils-{{ lfs.binutils_version }}"
+    - "bash-{{ lfs.bash_version }}"
+    - "coreutils-{{ lfs.coreutils_version }}"
+    - "diffutils-{{ lfs.diffutils_version }}"
+    - "file-{{ lfs.file_version }}"
+    - "findutils-{{ lfs.findutils_version }}"
+    - "gawk-{{ lfs.gawk_version }}"
+    - "grep-{{ lfs.grep_version }}"
+    - "gzip-{{ lfs.gzip_version }}"
+    - "m4-{{ lfs.m4_version }}"
+    - "make-{{ lfs.make_version }}"
+    - "ncurses-{{ lfs.ncurses_version }}"
+    - "patch-{{ lfs.patch_version }}"
+    - "sed-{{ lfs.sed_version }}"
+    - "tar-{{ lfs.tar_version }}"
+    - "xz-{{ lfs.xz_version }}"
+    - "gcc-{{ lfs.gcc_version }}"
+    - "mpfr-{{ lfs.mpfr_version }}"
+    - "gmp-{{ lfs.gmp_version }}"
+    - "mpc-{{ lfs.mpc_version }}"
+    - "binutils-{{ lfs.binutils_version }}"
+
