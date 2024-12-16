@@ -12,8 +12,8 @@
 #  file:
 #    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
 #    state: directory
-#
-#
+
+
 #- name: Unpack MPFR
 #  become_user: root
 #  unarchive:
@@ -22,8 +22,8 @@
 #    dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/mpfr"
 #    extra_opts: ['--strip-components=1', '--show-stored-names']
 #    # dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
-#
-#
+
+
 #- name: Unpack GMP
 #  become_user: root
 #  unarchive:
@@ -31,8 +31,8 @@
 #    src: "{{ lfs.mnt_dir }}/sources/gmp-{{ lfs.gmp_version }}.tar.xz"
 #    dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/gmp"
 #    extra_opts: ['--strip-components=1', '--show-stored-names']
-#
-#
+
+
 #- name: Unpack MPC
 #  become_user: root
 #  unarchive:
@@ -42,23 +42,24 @@
 #    extra_opts: ['--strip-components=1', '--show-stored-names']
 
 
-- name: X
-  become_user: root
-  shell: |
-    case $(uname -m) in
-    x86_64)
-      sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
-    ;;
-    esac
-  ignore_errors: true
-  args:
-    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
+#- name: X
+#  become_user: root
+#  shell: |
+#    case $(uname -m) in
+#    x86_64)
+#      sed -e '/m64=/s/lib64/..\/usr\/lib/' -i.orig gcc/config/i386/t-linux64
+#    ;;
+#    esac
+#  ignore_errors: true
+#  args:
+#    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
+#  # sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
 
 
 - name: Configure the Libstdc++ Build
   become_user: root
   shell: |
-    export LFS_TGT=$(uname -m)-lfs-linux-gnu &&
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu &&                 \
     ../libstdc++-v3/configure                                   \
     --host=$LFS_TGT                                             \
     --build=$(../config.guess)                                  \
@@ -75,14 +76,14 @@
 
 - name: Build Libstdc++
   become_user: root
-  shell: make -j $(echo "$(cat /proc/cpuinfo | grep processor | tail -1 | awk '{print $3}') - 1" | bc)
+  shell: make -j {{ use_cores }}
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
 
 
 - name: Install Libstdc++
   become_user: root
-  shell: make DESTDIR=$LFS install
+  shell: make -j {{ use_cores }} DESTDIR=$LFS install
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
@@ -98,4 +99,6 @@
     - "stdc++"
     - "stdc++fs"
     - "supc++"
+
+# https://gcc.gnu.org/legacy-ml/gcc-help/2012-07/msg00018.html
 

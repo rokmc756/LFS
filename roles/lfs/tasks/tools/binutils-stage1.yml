@@ -31,7 +31,7 @@
 
 - name: Build Binutils
   become_user: root
-  shell: make -j $(echo "$(cat /proc/cpuinfo | grep processor | tail -1 | awk '{print $3}') - 1" | bc)
+  shell: make -j {{ use_cores }}
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
 
@@ -57,7 +57,7 @@
 
 - name: Install Binutils
   become_user: root
-  shell: make install
+  shell: make -j {{ use_cores }} install
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/binutils-{{ lfs.binutils_version }}/build"
 

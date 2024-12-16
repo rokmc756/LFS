@@ -1,0 +1,35 @@
+---
+- name: Unpack M4
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.m4_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
+
+
+- name: Configure the M4
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu && ./configure --prefix=/usr --host=$LFS_TGT --build=$(build-aux/config.guess)
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.m4_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Build M4
+  become_user: root
+  shell: make -j {{ use_cores }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.m4_version }}"
+
+
+- name: Install M4
+  become_user: root
+  shell: make -j {{ use_cores }} DESTDIR=$LFS install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.m4_version }}"
+
+

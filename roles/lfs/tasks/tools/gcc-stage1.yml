@@ -96,7 +96,7 @@
 - name: Configure the GCC Build
   become_user: root
   shell: |
-    export LFS_TGT=$(uname -m)-lfs-linux-gnu
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu  &&
     ../configure                                 \
     --target=$LFS_TGT                            \
     --prefix={{ lfs.tools_dir }}                 \
@@ -125,22 +125,21 @@
 
 - name: Build GCC
   become_user: root
-  shell: make -j $(echo "$(cat /proc/cpuinfo | grep processor | tail -1 | awk '{print $3}') - 1" | bc)
+  shell: make -j {{ use_cores }}
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
 
 
 - name: Install GCC
   become_user: root
-  shell: make install
+  shell: make -j {{ use_cores }} install
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
 
 
-- name: Clean Up the Sources
-  become_user: root
-  file:
-    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
-    state: absent
-
+#- name: Clean Up the Sources
+#  become_user: root
+#  file:
+#    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
+#    state: absent
 

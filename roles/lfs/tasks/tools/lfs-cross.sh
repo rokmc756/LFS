@@ -178,7 +178,7 @@ begin bash-5.1.16 tar.gz
             --host=$LFS_TGT                 \
             --without-bash-malloc
 make
-make DESTDIR=$LFS install
+make -j 8 DESTDIR=$LFS install
 ln -sv bash $LFS/bin/sh
 finish
 

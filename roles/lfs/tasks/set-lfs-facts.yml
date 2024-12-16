@@ -32,3 +32,13 @@
     install_pkgs: "{{ suse_install_pkgs }}"
   when: ansible_distribution == "openSUSE Leap"
 
+
+- name: Get CPU Cores for Compiler
+  shell: |
+    echo "$(cat /proc/cpuinfo | grep processor | tail -1 | awk '{print $3}') - 1" | bc
+  register: get_cores
+
+
+- set_fact:
+    use_cores: "{{ get_cores.stdout }}"
+

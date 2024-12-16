@@ -14,6 +14,8 @@
     - env
     - binutils
     - gcc
+    - glibc
+    - libstdc
 
 
 - name: Prepare the Host System
@@ -78,4 +80,10 @@
     - libstdc
     - build
 
+
+- name: Build Cross Compile Temp Tools
+  import_tasks: build-temp-tools.yml
+  tags:
+    - temp-tools
+    - build
 

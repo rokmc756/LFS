@@ -66,6 +66,9 @@ glibc: setup-lfs.yml
 libstdc: setup-lfs.yml
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="libstdc"
 
+temp-tools: setup-lfs.yml
+	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -i ansible-hosts -u ${USERNAME} setup-lfs.yml --tags="temp-tools"
+
 
 boot: control-vms.yml
 	ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} control-vms.yml --extra-vars "power_state=powered-on power_title=Power-On VMs"

@@ -1,0 +1,50 @@
+---
+- name: Unpack File
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/file-{{ lfs.file_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
+
+
+- name: Configure File
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu && ./configure --prefix=/usr --host=$LFS_TGT --build=$(./config.guess)
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/file-{{ lfs.file_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Build File
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} FILE_COMPILE=$(pwd)/build/src/file
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/file-{{ lfs.file_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Install File
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} DESTDIR=$LFS install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/file-{{ lfs.file_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Remove the Libtool Archive File
+  become_user: root
+  shell: |
+    rm -v $LFS/usr/lib/libmagic.la
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/file-{{ lfs.file_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+

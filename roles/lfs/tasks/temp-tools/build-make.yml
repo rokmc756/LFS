@@ -1,0 +1,45 @@
+---
+- name: Unpack Make
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/make-{{ lfs.make_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
+
+
+- name: Configure Make
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu && ./configure --prefix=/usr --without-guile \
+    --host=$LFS_TGT --build=$(build-aux/config.guess)
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/make-{{ lfs.make_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+# The meaning of the new configure option:
+#
+# --without-guile
+# Although we are cross-compiling, configure tries to use guile from the build host if it finds it. This makes compilation fail, so this switch prevents using it.
+
+
+- name: Build Make
+  become_user: root
+  shell: |
+    make -j {{ use_cores }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/make-{{ lfs.make_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Install Make
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} DESTDIR=$LFS install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/make-{{ lfs.make_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
