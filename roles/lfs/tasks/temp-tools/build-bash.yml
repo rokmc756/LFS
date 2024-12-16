@@ -2,7 +2,7 @@
 - name: Unpack Bash
   become_user: root
   unarchive:
-    src: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}.tar.xz"
+    src: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}.tar.gz"
     dest: "{{ lfs.mnt_dir }}/sources"
     owner: "{{ lfs.user }}"
     group: "{{ lfs.group }}"
@@ -12,10 +12,14 @@
 - name: Configure Bash
   become_user: root
   shell: |
-    export LFS_TGT=$(uname -m)-lfs-linux-gnu && ./configure --prefix=/usr --build=$(sh support/config.guess) \
-    --host=$LFS_TGT --without-bash-malloc bash_cv_strtold_broken=no
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu &&   \
+    ./configure --prefix=/usr                     \
+    --build=$(sh support/config.guess)            \
+    --host=$LFS_TGT                               \
+    --without-bash-malloc                         \
+    bash_cv_strtold_broken=no
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.bash_version }}"
+    chdir: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
 
@@ -25,7 +29,7 @@
   shell: |
     make -j {{ use_cores }}
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.bash_version }}"
+    chdir: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
 
@@ -35,9 +39,19 @@
   shell: |
     make -j {{ use_cores }} DESTDIR=$LFS install
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.bash_version }}"
+    chdir: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Create Bin Directory
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/bin"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 
 - name: Link Bash
@@ -45,7 +59,8 @@
   shell: |
     ln -sv bash $LFS/bin/sh
   args:
-    chdir: "{{ lfs.mnt_dir }}/sources/m4-{{ lfs.bash_version }}"
+    chdir: "{{ lfs.mnt_dir }}/sources/bash-{{ lfs.bash_version }}"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+
 

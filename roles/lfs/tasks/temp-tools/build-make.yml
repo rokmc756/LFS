@@ -2,7 +2,7 @@
 - name: Unpack Make
   become_user: root
   unarchive:
-    src: "{{ lfs.mnt_dir }}/sources/make-{{ lfs.make_version }}.tar.xz"
+    src: "{{ lfs.mnt_dir }}/sources/make-{{ lfs.make_version }}.tar.gz"
     dest: "{{ lfs.mnt_dir }}/sources"
     owner: "{{ lfs.user }}"
     group: "{{ lfs.group }}"

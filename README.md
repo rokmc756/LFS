@@ -103,6 +103,10 @@ $ make download
 $ make env
 $ make bintuils
 $ make gcc
+$ make headers
+$ make glibc
+$ make libstdc
+$ make temp-tools
 ```
 
 ## Version

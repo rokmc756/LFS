@@ -1,214 +1,125 @@
-# 6.2. M4-1.4.19
-begin m4-1.4.19 tar.xz
-./configure --prefix=/usr   \
-            --host=$LFS_TGT \
-            --build=$(build-aux/config.guess)
-make
-make DESTDIR=$LFS install
-finish
+---
+- name: Unpack Ncurses
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}.tar.gz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
 
 
-
-# 6.3. Ncurses-6.3
-begin ncurses-6.3 tar.gz
-sed -i s/mawk// configure
-mkdir build
-pushd build
-  ../configure
-  make -C include
-  make -C progs tic
-popd
-./configure --prefix=/usr                \
-            --host=$LFS_TGT              \
-            --build=$(./config.guess)    \
-            --mandir=/usr/share/man      \
-            --with-manpage-format=normal \
-            --with-shared                \
-            --without-normal             \
-            --with-cxx-shared            \
-            --without-debug              \
-            --without-ada                \
-            --disable-stripping          \
-            --enable-widec
-make
-make DESTDIR=$LFS TIC_PATH=$(pwd)/build/progs/tic install
-echo "INPUT(-lncursesw)" > $LFS/usr/lib/libncurses.so
-finish
+- name: Ensure that gawk is found first during configuration
+  become_user: root
+  shell: |
+    sed -i s/mawk// configure
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
-
-# 6.4. Bash-5.1.16
-begin bash-5.1.16 tar.gz
-./configure --prefix=/usr                   \
-            --build=$(support/config.guess) \
-            --host=$LFS_TGT                 \
-            --without-bash-malloc
-make
-make DESTDIR=$LFS install
-ln -sv bash $LFS/bin/sh
-finish
+- name: Create Ncurses Build Directory
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}/build"
+    state: directory
 
 
+- name: Configure the tic program on the build host
+  become_user: root
+  shell: |
+    ../configure
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
-# 6.5. Coreutils-9.1
-begin coreutils-9.1 tar.xz
-./configure --prefix=/usr                     \
-            --host=$LFS_TGT                   \
-            --build=$(build-aux/config.guess) \
-            --enable-install-program=hostname \
-            --enable-no-install-program=kill,uptime
-make
-make DESTDIR=$LFS install
-mv -v $LFS/usr/bin/chroot              $LFS/usr/sbin
-mkdir -pv $LFS/usr/share/man/man8
-mv -v $LFS/usr/share/man/man1/chroot.1 $LFS/usr/share/man/man8/chroot.8
-sed -i 's/"1"/"8"/'                    $LFS/usr/share/man/man8/chroot.8
-finish
+- name: Build the tic program on the build host
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} -C include
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
+- name: Build the tic program on the build host
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} -C progs tic
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
-
-# 6.6. Diffutils-3.8
-begin diffutils-3.8 tar.xz
-./configure --prefix=/usr --host=$LFS_TGT
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-
-# 6.7. File-5.42
-begin file-5.42 tar.gz
-mkdir build
-pushd build
-  ../configure --disable-bzlib      \
-               --disable-libseccomp \
-               --disable-xzlib      \
-               --disable-zlib
-  make
-popd
-./configure --prefix=/usr --host=$LFS_TGT --build=$(./config.guess)
-make FILE_COMPILE=$(pwd)/build/src/file
-make DESTDIR=$LFS install
-rm -v $LFS/usr/lib/libmagic.la
-finish
+- name: Configure Ncurses
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu && \
+    ./configure --prefix=/usr    \
+    --host=$LFS_TGT               \
+    --build=$(./config.guess)     \
+    --mandir=/usr/share/man       \
+    --with-manpage-format=normal  \
+    --with-shared                 \
+    --without-normal              \
+    --with-cxx-shared             \
+    --without-debug               \
+    --without-ada                 \
+    --disable-stripping
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
+- name: Build Ncurses
+  become_user: root
+  shell: |
+    make -j {{ use_cores }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
-# 6.8. Findutils-4.9.0
-begin findutils-4.9.0 tar.xz
-./configure --prefix=/usr                   \
-            --localstatedir=/var/lib/locate \
-            --host=$LFS_TGT                 \
-            --build=$(build-aux/config.guess)
-make
-make DESTDIR=$LFS install
-finish
+- name: Install Ncurses
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} DESTDIR=$LFS TIC_PATH=$(pwd)/build/progs/tic install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
+# The libncurses.so library is needed by a few packages we will build soon. We create this symlink to use libncursesw.so as a replacement.
+- name: Create this symlink to use libncursesw.so as a replacement
+  become_user: root
+  shell: |
+    ln -sv libncursesw.so $LFS/usr/lib/libncurses.so
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 
-
-# 6.9. Gawk-5.1.1
-begin gawk-5.1.1 tar.xz
-sed -i 's/extras//' Makefile.in
-./configure --prefix=/usr   \
-            --host=$LFS_TGT \
-            --build=$(build-aux/config.guess)
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-# 6.10. Grep-3.7
-begin grep-3.7 tar.xz
-./configure --prefix=/usr   \
-            --host=$LFS_TGT
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-
-# 6.11. Gzip-1.12
-begin gzip-1.12 tar.xz
-./configure --prefix=/usr --host=$LFS_TGT
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-
-# 6.12. Make-4.3
-begin make-4.3 tar.gz
-./configure --prefix=/usr   \
-            --without-guile \
-            --host=$LFS_TGT \
-            --build=$(build-aux/config.guess)
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-
-# 6.13. Patch-2.7.6
-begin patch-2.7.6 tar.xz
-./configure --prefix=/usr   \
-            --host=$LFS_TGT \
-            --build=$(build-aux/config.guess)
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-# 6.14. Sed-4.8
-begin sed-4.8 tar.xz
-./configure --prefix=/usr   \
-            --host=$LFS_TGT
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-# 6.15. Tar-1.34
-begin tar-1.34 tar.xz
-./configure --prefix=/usr                     \
-            --host=$LFS_TGT                   \
-            --build=$(build-aux/config.guess)
-make
-make DESTDIR=$LFS install
-finish
-
-
-
-
-# 6.16. Xz-5.2.6
-begin xz-5.2.6 tar.xz
-./configure --prefix=/usr                     \
-            --host=$LFS_TGT                   \
-            --build=$(build-aux/config.guess) \
-            --disable-static                  \
-            --docdir=/usr/share/doc/xz-5.2.6
-make
-make DESTDIR=$LFS install
-rm -v $LFS/usr/lib/liblzma.la
-finish
+# The header file curses.h contains the definition of various Ncurses data structures.
+# With different preprocessor macro definitions two different sets of the data structure definition may be used:
+# the 8-bit definition is compatible with libncurses.so and the wide-character definition is compatible with libncursesw.so.
+# Since we are using libncursesw.so as a replacement of libncurses.so,
+# edit the header file so it will always use the wide-character data structure definition compatible with libncursesw.so.
+- name: Edit the header file so it will always use the wide-character data structure definition compatible with libncursesw.so
+  become_user: root
+  shell: |
+    sed -e 's/^#if.*XOPEN.*$/#if 1/' -i $LFS/usr/include/curses.h
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/ncurses-{{ lfs.ncurses_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
 

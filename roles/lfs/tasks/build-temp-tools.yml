@@ -60,10 +60,10 @@
 
 
 - name: Install Binutils
-  import_tasks: temp-tools/bintuils-stage2.yml
+  import_tasks: temp-tools/binutils-stage2.yml
 
 
 - name: Install GCC
-  import_tasks: temp-tools/gcc-state2.yml
+  import_tasks: temp-tools/gcc-stage2.yml
 
 

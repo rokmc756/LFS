@@ -1,0 +1,152 @@
+---
+- name: Unpack GLIBC
+  become_user: root
+  unarchive:
+    remote_src: yes
+    src: "{{ lfs.mnt_dir }}/sources/glibc-{{ pkgs.glibc_ver }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+
+
+# Additionally, for x86_64, create a compatibility symbolic link required for proper operation of the dynamic library loader
+#- name: Create a Symbolic Link for LSB Compliance
+#  become_user: root
+#  shell: |
+#    case $(uname -m) in
+#    i?86)
+#      ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
+#      ;;
+#    x86_64)
+#      rm -rf $LFS/usr/lib64
+#      mkdir $LFS/usr/lib64
+#      ln -sfv ../usr/lib/ld-linux-x86-64.so.2 $LFS/usr/lib64/ld-lsb-x86-64.so.3
+#      ;;
+#    esac
+#  ignore_errors: true
+#  args:
+#    chdir: "{{ lfs.mnt_dir }}/sources/"
+#    executable: /bin/bash
+#  environment:
+#    LFS: "{{ lfs.mnt_dir }}"
+#  # ln -sfv ../usr/lib/ld-linux-x86-64.so.2 $LFS/lib64
+#  # ln -sfv ../../lib/ld-linux-x86-64.so.2 $LFS/lib64
+#  # ln -sfv ../../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
+#  # /mnt/lfs/usr/lib/ld-linux-x86-64.so.2
+
+
+
+# Some of the Glibc programs use the non-FHS-compliant /var/db directory to store their runtime data.
+# Apply the following patch to make such programs store their runtime data in the FHS-compliant locations
+- name: Apply the Following Patch to Make Such Programs Store Their Runtime Data in the FHS-Compliant Locations
+  become_user: root
+  shell: |
+    patch -Np1 -i ../glibc-2.40-fhs-1.patch
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ pkgs.glibc_ver }}"
+    executable: /bin/bash
+
+
+- name: Create GLIBC Build Directory
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/glibc-{{ pkgs.glibc_ver }}/build"
+    state: directory
+
+
+- name: Ensure that the ldconfig and SLN Utilities are Installed into /usr/sbin
+  become_user: root
+  shell: |
+    echo "rootsbindir=/usr/sbin" > configparms
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ pkgs.glibc_ver }}/build"
+    executable: /bin/bash
+  # echo "rootsbindir=/usr/sbin" > {{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/configparms
+
+
+- name: Prepare GLIBC for Compilation
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu &&  \
+    ../configure --prefix=/us                    \
+    --disable-werror                             \
+    --enable-kernel=4.19                         \
+    --enable-stack-protector=strong              \
+    --disable-nscd                               \
+    libc_cv_slibdir=/usr/lib
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ pkgs.glibc_ver }}/build"
+    executable: /bin/bash
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Compile and Insall Package
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} && make -j {{ use_cores }} DESTDIR=$LFS install
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
+    executable: /bin/bash
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Fix a Hard Coded Path to the Executable Loader in the LDD Script
+  become_user: root
+  shell: |
+    sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
+    executable: /bin/bash
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Perform a Sanity Check
+  become_user: root
+  shell: |
+    echo 'int main(){}' | gcc -xc -
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
+    executable: /bin/bash
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Stop and Ensure that the Basic Functions ( Compiling and Linking ) of the New Toolchain Are Working as Expected
+  become_user: root
+  shell: |
+    readelf -l a.out | grep ld-linux
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
+    executable: /bin/bash
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Clean Up the Test File
+  become_user: root
+  file:
+    path: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build/a.out"
+    state: absent
+
+
+- name: X
+  become_user: root
+  shell: |
+    export LFS_TGT=$(uname -m)-lfs-linux-gnu &&
+    $LFS/tools/libexec/gcc/$LFS_TGT/{{ lfs.gcc_version }}/install-tools/mkheaders
+  ignore_errors: true
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/glibc-{{ lfs.glibc_version }}/build"
+    executable: /bin/bash
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
