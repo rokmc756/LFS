@@ -1,24 +1,81 @@
-wget https://libisl.sourceforge.io/isl-0.27.tar.xz
+---
+- name: Download the Sources List
+  become_user: root
+  get_url:
+    url: https://libisl.sourceforge.io/isl-{{ lfs.isl_version }}.tar.xz
+    dest: "{{ lfs.mnt_dir }}/sources/isl-{{ lfs.isl_version }}.tar.xz"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
 
-tar xvJf isl-0.27.tar.xz
 
-cd isl-0.27
+- name: Unpack Libisl
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/isl-{{ lfs.isl_version }}.tar.xz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
 
-ls
 
-find ./ -name schedule.h
+- name: Configure Libisl
+  become_user: root
+  shell: |
+    ./configure --prefix=$LFS/usr \
+    --disable-static \
+    --docdir=$LFS/usr/share/doc/isl-{{ lfs.isl_version }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/isl-{{ lfs.isl_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
-./configure --prefix=/mnt/lfs/usr                --disable-static             --docdir=/usr/share/doc/isl-0.27
 
-make -j 8
+- name: Build Libisl
+  become_user: root
+  shell: |
+    make -j {{ use_cores }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/isl-{{ lfs.isl_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
-make -j 8 install
 
-install -vd /mnt/lfs/usr/share/doc/isl-0.27
+- name: Install Libisl
+  become_user: root
+  shell: |
+    make -j 8 install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/isl-{{ lfs.isl_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
-install -m644 doc/{CodingStyle,manual.pdf,SubmittingPatches,user.pod}         /mnt/lfs/usr/share/doc/isl-0.27
 
-mkdir -pv /mnt/lfs/usr/share/gdb/auto-load/usr/lib
+- name: Place Libisl
+  become_user: root
+  shell: |
+    install -m644 doc/{CodingStyle,manual.pdf,SubmittingPatches,user.pod} $LFS/usr/share/doc/isl-0.27
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/isl-{{ lfs.isl_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
-mv -v /mnt/lfs/usr/lib/libisl*gdb.py /mnt/lfs/usr/share/gdb/auto-load/usr/lib
+
+- name: Place Libisl
+  become_user: root
+  file: 
+    path: "{{ lfs.mnt_dir }}/usr/share/gdb/auto-load/usr/lib"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+
+- name: Copy Libisl Python Libary
+  become_user: root
+  shell: |
+    mv -v $LFS/usr/lib/libisl*gdb.py $LFS/usr/share/gdb/auto-load/usr/lib
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/isl-{{ lfs.isl_version }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 

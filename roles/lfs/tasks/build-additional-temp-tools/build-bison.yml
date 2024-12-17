@@ -1,0 +1,18 @@
+# 7.8.1. Installation of Bison
+# Prepare Bison for compilation:
+
+# ./configure --prefix=/usr \
+#            --docdir=/usr/share/doc/bison-3.8.2
+#The meaning of the new configure option:
+#
+#--docdir=/usr/share/doc/bison-3.8.2
+#This tells the build system to install bison documentation into a versioned directory.
+#
+#Compile the package:
+#
+#make
+#Install the package:
+#
+#make install
+#Details on this package are located in Section 8.34.2, “Contents of Bison.”
+
