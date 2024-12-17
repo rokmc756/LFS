@@ -1,9 +1,24 @@
 # Currently, the whole directory hierarchy in $LFS is owned by the user lfs, a user that exists only on the host system. If the directories and files under $LFS are kept as they are, they will be owned by a user ID without a corresponding account. This is dangerous because a user account created later could get this same user ID and would own all the files under $LFS, thus exposing these files to possible malicious manipulation.
-#
 # To address this issue, change the ownership of the $LFS/* directories to user root by running the following command:
 
+- name: Change the ownership of the $LFS/* directories
+  become_user: root
+  shell: |
+    chown --from lfs -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
+  args:
+    chdir: "{{ lfs.mnt_dir }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
-chown --from lfs -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
-case $(uname -m) in
-  x86_64) chown --from lfs -R root:root $LFS/lib64 ;;
-esac
+
+- name: Change the ownership of the $LFS/* directories
+  become_user: root
+  shell: |
+    case $(uname -m) in
+      x86_64) chown --from lfs -R root:root $LFS/lib64 ;;
+    esac
+  args:
+    chdir: "{{ lfs.mnt_dir }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+

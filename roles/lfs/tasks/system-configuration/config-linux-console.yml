@@ -1,0 +1,56 @@
+9.6. Configuring the Linux Console
+This section discusses how to configure the systemd-vconsole-setup system service, which configures the virtual console font and console keymap.
+
+The systemd-vconsole-setup service reads the /etc/vconsole.conf file for configuration information. Decide which keymap and screen font will be used. Various language-specific HOWTOs can also help with this, see https://tldp.org/HOWTO/HOWTO-INDEX/other-lang.html. Examine the output of localectl list-keymaps for a list of valid console keymaps. Look in the /usr/share/consolefonts directory for valid screen fonts.
+
+The /etc/vconsole.conf file should contain lines of the form: VARIABLE=value. The following variables are recognized:
+
+KEYMAP
+This variable specifies the key mapping table for the keyboard. If unset, it defaults to us.
+
+KEYMAP_TOGGLE
+This variable can be used to configure a second toggle keymap and is unset by default.
+
+FONT
+This variable specifies the font used by the virtual console.
+
+FONT_MAP
+This variable specifies the console map to be used.
+
+FONT_UNIMAP
+This variable specifies the Unicode font map.
+
+We'll use C.UTF-8 as the locale for interactive sessions in the Linux console in Section 9.7, “Configuring the System Locale.” The console fonts shipped by the Kbd package containing the glyphs for all characters from the program messages in the C.UTF-8 locale are LatArCyrHeb*.psfu.gz, LatGrkCyr*.psfu.gz, Lat2-Terminus16.psfu.gz, and pancyrillic.f16.psfu.gz in /usr/share/consolefonts (the other shipped console fonts lack glyphs of some characters like the Unicode left/right quotation marks and the Unicode English dash). So set one of them, for example Lat2-Terminus16.psfu.gz as the default console font:
+
+echo FONT=Lat2-Terminus16 > /etc/vconsole.conf
+An example for a German keyboard and console is given below:
+
+cat > /etc/vconsole.conf << "EOF"
+KEYMAP=de-latin1
+FONT=Lat2-Terminus16
+EOF
+You can change KEYMAP value at runtime by using the localectl utility:
+
+localectl set-keymap MAP
+[Note] Note
+Please note that the localectl command doesn't work in the chroot environment. It can only be used after the LFS system is booted with systemd.
+
+You can also use localectl utility with the corresponding parameters to change X11 keyboard layout, model, variant and options:
+
+localectl set-x11-keymap LAYOUT [MODEL] [VARIANT] [OPTIONS]
+To list possible values for localectl set-x11-keymap parameters, run localectl with parameters listed below:
+
+list-x11-keymap-models
+Shows known X11 keyboard mapping models.
+
+list-x11-keymap-layouts
+Shows known X11 keyboard mapping layouts.
+
+list-x11-keymap-variants
+Shows known X11 keyboard mapping variants.
+
+list-x11-keymap-options
+Shows known X11 keyboard mapping options.
+
+[Note] Note
+Using any of the parameters listed above requires the XKeyboard-Config package from BLFS

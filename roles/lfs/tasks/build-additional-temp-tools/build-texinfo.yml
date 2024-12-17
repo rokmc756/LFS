@@ -1,12 +1,41 @@
-# 7.11.1. Installation of Texinfo
-# Prepare Texinfo for compilation:
-#
-#./configure --prefix=/usr
-#Compile the package:
-#
-#make
-#Install the package:
-#
-#make install
-#Details on this package are located in Section 8.72.2, “Contents of Texinfo.”
+---
+- name: Unpack Textinfo
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/textinfo-{{ pkgs.textinfo_ver }}.tar.gz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
+
+
+- name: Prepare Textinfo for compilation
+  become_user: root
+  shell: |
+    ./configure --prefix=/usr
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/textinfo-{{ pkgs.textinfo_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Compile the package
+  become_user: root
+  shell: |
+    make -j {{ use_cores }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/textinfo-{{ pkgs.textinfo_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Install the package
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/textinfo-{{ pkgs.textinfo_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
 

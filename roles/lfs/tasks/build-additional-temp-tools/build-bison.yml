@@ -1,18 +1,40 @@
-# 7.8.1. Installation of Bison
-# Prepare Bison for compilation:
+---
+- name: Unpack Bison
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/bison-{{ pkgs.bison_ver }}.tar.gz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
 
-# ./configure --prefix=/usr \
-#            --docdir=/usr/share/doc/bison-3.8.2
-#The meaning of the new configure option:
-#
-#--docdir=/usr/share/doc/bison-3.8.2
-#This tells the build system to install bison documentation into a versioned directory.
-#
-#Compile the package:
-#
-#make
-#Install the package:
-#
-#make install
-#Details on this package are located in Section 8.34.2, “Contents of Bison.”
+
+- name: Prepare Gettext for compilation
+  become_user: root
+  shell: |
+    ./configure --prefix=/usr --docdir=/usr/share/doc/bison-{{ pkgs.bison_ver }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/bison-{{ pkgs.bison_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Compile the package
+  become_user: root
+  shell: |
+    make -j {{ use_cores }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/bison-{{ pkgs.bison_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Install the package
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/bison-{{ pkgs.bison_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 

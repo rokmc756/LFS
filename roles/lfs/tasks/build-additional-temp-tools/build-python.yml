@@ -1,35 +1,40 @@
-# 7.10. Python-3.12.5
-# The Python 3 package contains the Python development environment. It is useful for object-oriented programming, writing scripts, prototyping large programs, and developing entire applications. Python is an interpreted computer language.
-#
-#Approximate build time:
-#0.4 SBU
-#Required disk space:
-#603 MB
-#7.10.1. Installation of Python
-#[Note] Note
-#There are two package files whose name starts with the “python” prefix. The one to extract from is Python-3.12.5.tar.xz (notice the uppercase first letter).
-#
-#Prepare Python for compilation:
-#
-#./configure --prefix=/usr   \
-#            --enable-shared \
-#            --without-ensurepip
-#The meaning of the configure option:
-#
-#--enable-shared
-#This switch prevents installation of static libraries.
-#
-#--without-ensurepip
-#This switch disables the Python package installer, which is not needed at this stage.
-#
-#Compile the package:
-#
-#make
-#[Note] Note
-#Some Python 3 modules can't be built now because the dependencies are not installed yet. For the ssl module, a message Python requires a OpenSSL 1.1.1 or newer is outputted. The message should be ignored. Just make sure the toplevel make command has not failed. The optional modules are not needed now and they will be built in Chapter 8.
-#
-#Install the package:
-#
-#make install
-#Details on this package are located in Section 8.52.2, “Contents of Python 3.”
+---
+- name: Unpack Python
+  become_user: root
+  unarchive:
+    src: "{{ lfs.mnt_dir }}/sources/python-{{ pkgs.python_ver }}.tar.gz"
+    dest: "{{ lfs.mnt_dir }}/sources"
+    owner: "{{ lfs.user }}"
+    group: "{{ lfs.group }}"
+    remote_src: yes
+
+
+- name: Prepare Python for compilation
+  become_user: root
+  shell: |
+    ./configure --prefix=/usr --enable-shared --without-ensurepip
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/python-{{ pkgs.python_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Compile the package
+  become_user: root
+  shell: |
+    make -j {{ use_cores }}
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/python-{{ pkgs.python_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+
+
+- name: Install the package
+  become_user: root
+  shell: |
+    make -j {{ use_cores }} install
+  args:
+    chdir: "{{ lfs.mnt_dir }}/sources/python-{{ pkgs.python_ver }}"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
 
