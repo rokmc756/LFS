@@ -1,0 +1,24 @@
+wget https://libisl.sourceforge.io/isl-0.27.tar.xz
+
+tar xvJf isl-0.27.tar.xz
+
+cd isl-0.27
+
+ls
+
+find ./ -name schedule.h
+
+./configure --prefix=/mnt/lfs/usr                --disable-static             --docdir=/usr/share/doc/isl-0.27
+
+make -j 8
+
+make -j 8 install
+
+install -vd /mnt/lfs/usr/share/doc/isl-0.27
+
+install -m644 doc/{CodingStyle,manual.pdf,SubmittingPatches,user.pod}         /mnt/lfs/usr/share/doc/isl-0.27
+
+mkdir -pv /mnt/lfs/usr/share/gdb/auto-load/usr/lib
+
+mv -v /mnt/lfs/usr/lib/libisl*gdb.py /mnt/lfs/usr/share/gdb/auto-load/usr/lib
+

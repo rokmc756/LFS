@@ -81,6 +81,7 @@
     --disable-libvtv                               \
     --enable-languages=c,c++
   args:
+    executable: /bin/bash
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
@@ -91,6 +92,7 @@
   become_user: root
   shell: make -j {{ use_cores }}
   args:
+    executable: /bin/bash
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
@@ -101,6 +103,7 @@
   become_user: root
   shell: make -j {{ use_cores }} DESTDIR=$LFS install
   args:
+    executable: /bin/bash
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
@@ -121,4 +124,5 @@
 #  file:
 #    path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
 #    state: absent
+
 

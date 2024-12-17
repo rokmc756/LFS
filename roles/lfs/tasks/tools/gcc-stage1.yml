@@ -105,9 +105,11 @@
     --disable-libstdcxx                          \
     --enable-languages=c,c++
   args:
+    executable: /bin/bash
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
   environment:
     LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
 - name: Build GCC
@@ -115,6 +117,12 @@
   shell: make -j {{ use_cores }}
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+  args:
+    executable: /bin/bash
+    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
 - name: Install GCC
@@ -122,6 +130,12 @@
   shell: make -j {{ use_cores }} install
   args:
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+  args:
+    executable: /bin/bash
+    chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/build"
+  environment:
+    LFS: "{{ lfs.mnt_dir }}"
+    PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
 #- name: Clean Up the Sources

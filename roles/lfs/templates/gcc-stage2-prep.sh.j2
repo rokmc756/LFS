@@ -3,19 +3,6 @@ mv -v mpfr-{{ lfs.mpfr_version }} mpfr
 mv -v gmp-{{ lfs.gmp_version }} gmp
 mv -v mpc-{{ lfs.mpc_version}} mpc
 
-for file in gcc/config/{linux,i386/linux{,64}}.h
-do
-  cp -uv $file{,.orig}
-  sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' \
-      -e 's@/usr@/tools@g' $file.orig > $file
-  echo '
-#undef STANDARD_STARTFILE_PREFIX_1
-#undef STANDARD_STARTFILE_PREFIX_2
-#define STANDARD_STARTFILE_PREFIX_1 "{{ lfs.tools_dir }}/lib/"
-#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
-  touch $file.orig
-done
-
 # OK to compile libstdc++ after changin the following lines by Jack - 2024.12.16
 case $(uname -m) in
   x86_64)
@@ -26,7 +13,6 @@ esac
 
 # Original
 # sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
-
 sed '/thread_header =/s/@.*@/gthr-posix.h/' \
     -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
 
