@@ -1,0 +1,20 @@
+---
+- name: Prepare the Host System
+  import_tasks: prepare-host-system/host-prep.yml
+  when: ( host_prep is defined and host_prep == true ) or ( prep_all is defined and prep_all == true )
+
+
+- name: Partition the disk for LFS
+  import_tasks: prepare-host-system/partition.yml
+  when: ( partition is defined and partition == true ) or ( prep_all is defined and prep_all == true )
+
+
+- name: Download the LFS Sources Files
+  import_tasks: prepare-host-system/download-sources.yml
+  when: ( download is defined and download == true ) or ( prep_all is defined and prep_all == true )
+
+
+- name: Perform the Final Preparations
+  import_tasks: prepare-host-system/final-prep.yml
+  when: ( final_prep is defined and final_prep == true ) or ( prep_all is defined and prep_all == true )
+

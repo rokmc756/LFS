@@ -1,0 +1,25 @@
+---
+- name: Build Binutils ( stage 1 )
+  import_tasks: tools/binutils-stage1.yml
+  when: ( binutils is defined and binutils == true ) or ( all_tools is defined and all_tools == true )
+
+
+- name: Build GCC ( Stage 1 )
+  import_tasks: tools/gcc-stage1.yml
+  when: ( gcc is defined and gcc == true ) or ( all_tools is defined and all_tools == true )
+
+
+- name: Build Linux Kernel Header
+  import_tasks: tools/linux-headers.yml
+  when: ( header is defined and header == true ) or ( all_tools is defined and all_tools == true )
+
+
+- name: Build GLIBC ( Stage 1 )
+  import_tasks: tools/glibc-stage.yml
+  when: ( glibc is defined and glibc == true ) or ( all_tools is defined and all_tools == true )
+
+
+- name: Build Libstdc++ ( Stage 1 )
+  import_tasks: tools/libstdc-stage.yml
+  when: ( libstdc is defined and libstdc == true ) or ( all_tools is defined and all_tools == true )
+

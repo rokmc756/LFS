@@ -7,95 +7,116 @@
 - name: Set Facts for Package Versions
   import_tasks: set-lfs-facts.yml
   tags:
-    - build
     - prepare
-    - partition
-    - download
-    - env
-    - binutils
-    - gcc
-    - glibc
-    - libstdc
+    - tools
     - temp-tools
     - install
     - uninstall
-    - binutils2
-    - gcc2
 
 
-- name: Build Binutils ( stage 2 )
-  import_tasks: temp-tools/binutils-stage2.yml
-  tags:
-    - binutils2
+- name: Prepare Build Host System
+  import_tasks: prepare-build-host.yml
+  tags: prepare
 
 
-- name: Build GCC ( Stage 2 )
-  import_tasks: temp-tools/gcc-stage2.yml
-  tags:
-    - gcc2
+- name: Install Build Tools
+  import_tasks: install-build-tools.yml
+  tags: tools
 
 
-- name: Prepare the Host System
-  import_tasks: host-prep.yml
-  tags:
-    - prepare
-    - build
+- name: Build Cross Compile Temp Tools
+  import_tasks: install-build-temp-tools.yml
+  tags: temp-tools
 
 
-- name: Partition the disk for LFS
-  import_tasks: partition.yml
-  tags:
-    - partition
-    - build
+- name: Remove Build Directory for Cross Compile Temp Tools
+  import_tasks: uninstall-build-temp-tools.yml
+  tags: uninstall
 
 
-- name: Download the LFS Sources Files
-  import_tasks: download-sources.yml
-  tags:
-    - download
-    - build
+- name: Uninstall Build Tools
+  import_tasks: uninstall-build-tools.yml
+  tags: uninstall
 
 
-- name: Perform the Final Preparations
-  import_tasks: final-prep.yml
-  tags:
-    - env
-    - build
+- name: Remove Build Host System
+  import_tasks: uninstall-build-host.yml
+  tags: uninstall
 
 
-- name: Build Binutils ( stage 1 )
-  import_tasks: tools/binutils-stage1.yml
-  tags:
-    - binutils
-    - build
+#- name: Prepare the Host System
+#  import_tasks: host-prep.yml
+#  tags:
+#    - prepare
+#    - build
 
 
-- name: Build GCC ( Stage 1 )
-  import_tasks: tools/gcc-stage1.yml
-  tags:
-    - gcc
-    - build
+#- name: Partition the disk for LFS
+#  import_tasks: partition.yml
+#  tags:
+#    - partition
+#    - build
 
 
-- name: Build Linux Kernel Header
-  import_tasks: tools/linux-headers.yml
-  tags:
-    - headers
-    - build
+#- name: Download the LFS Sources Files
+#  import_tasks: download-sources.yml
+#  tags:
+#    - download
+#    - build
 
 
-- name: Build GLIBC ( Stage )
-  import_tasks: tools/glibc-stage.yml
-  tags:
-    - glibc
-    - build
+#- name: Perform the Final Preparations
+#  import_tasks: final-prep.yml
+#  tags:
+#    - env
+#    - build
 
 
-- name: Build Libstdc++ ( Stage )
-  import_tasks: tools/libstdc-stage.yml
-  tags:
-    - libstdc
-    - build
+#- name: Build Binutils ( stage 1 )
+#  import_tasks: tools/binutils-stage1.yml
+#  tags:
+#    - binutils
+#    - build
+#
+#
+#- name: Build GCC ( Stage 1 )
+#  import_tasks: tools/gcc-stage1.yml
+#  tags:
+#    - gcc
+#    - build
+#
+#
+#- name: Build Linux Kernel Header
+#  import_tasks: tools/linux-headers.yml
+#  tags:
+#    - headers
+#    - build
+#
+#
+#- name: Build GLIBC ( Stage )
+#  import_tasks: tools/glibc-stage.yml
+#  tags:
+#    - glibc
+#    - build
+#
+#
+#- name: Build Libstdc++ ( Stage )
+#  import_tasks: tools/libstdc-stage.yml
+#  tags:
+#    - libstdc
+#    - build
+
+
+#- name: Build Binutils ( stage 2 )
+#  import_tasks: temp-tools/binutils-stage2.yml
+#  tags:
+#    - binutils2
+
+
+#- name: Build GCC ( Stage 2 )
+#  import_tasks: temp-tools/gcc-stage2.yml
+#  tags:
+#    - gcc2
 
 
 #- name: Build Cross Compile Temp Tools
@@ -103,17 +124,4 @@
 #  tags:
 #    - temp-tools
 #    - build
-
-
-
-- name: Build Cross Compile Temp Tools
-  import_tasks: install-cctt.yml
-  tags: install
-  when: install_cctt is defined and install_cctt == true
-
-
-- name: Remove Build Directory for Cross Compile Temp Tools
-  import_tasks: uninstall-cctt.yml
-  tags: uninstall
-  when: uninstall_cctt is defined and uninstall_cctt == true
 

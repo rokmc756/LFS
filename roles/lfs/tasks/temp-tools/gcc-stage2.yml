@@ -42,7 +42,7 @@
     dest: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
 
 
-- name: Copy LFS Scripts for GCC Build
+- name: Copy LFS Scripts for GCC Build ( Stage 2 )
   become_user: root
   template:
     src: "{{ item }}.j2"
@@ -54,7 +54,7 @@
 - debug: msg={{ copy_gcc_build_scripts }}
 
 
-- name: Run a Script to Prepare for the GCC Build
+- name: Run a Script to Prepare for the GCC Build ( Stage 2 )
   become_user: root
   shell: ./gcc-stage2-prep.sh
   ignore_errors: true
@@ -62,7 +62,7 @@
     chdir: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}/"
 
 
-- name: Configure the GCC Build
+- name: Configure the GCC Build ( Stage 2 )
   become_user: root
   shell: |
     export LFS_TGT=$(uname -m)-lfs-linux-gnu  &&
@@ -92,7 +92,7 @@
     PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
-- name: Build GCC
+- name: Build GCC ( Stage 2 )
   become_user: root
   shell: make -j {{ use_cores }}
   args:
@@ -103,7 +103,7 @@
     PATH: "{{ lfs.mnt_dir }}/tools/bin:/bin:/usr/bin"
 
 
-- name: Install GCC
+- name: Install GCC ( Stage 2 )
   become_user: root
   shell: make -j {{ use_cores }} DESTDIR=$LFS install
   args:
@@ -128,5 +128,4 @@
   file:
     path: "{{ lfs.mnt_dir }}/sources/gcc-{{ lfs.gcc_version }}"
     state: absent
-
 

@@ -25,4 +25,4 @@
     - "gmp-{{ lfs.gmp_version }}"
     - "mpc-{{ lfs.mpc_version }}"
     - "binutils-{{ lfs.binutils_version }}"
-
+  when: temp_tools is defined and temp_tools == true

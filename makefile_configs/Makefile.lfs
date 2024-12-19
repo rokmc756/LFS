@@ -13,9 +13,49 @@ lfs:
                 else\
 			echo "No Actions for Install Linux From Scratch";\
                 fi;\
+	elif [ "${r}" = "prepare" ]; then\
+                if [ ! -z ${r} ] && [ "${s}" = "host" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{host_prep: True}' --tags='prepare';\
+                elif [ ! -z ${r} ] && [ "${s}" = "partition" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{partition: True}' --tags='prepare';\
+                elif [ ! -z ${r} ] && [ "${s}" = "download" ]; then\
+                        ansible-playbook -i ansible-hosts  --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{download: True}' --tags='prepare';\
+                elif [ ! -z ${r} ] && [ "${s}" = "final" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{final: True}' --tags='prepare';\
+                elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{prep_all: True}' --tags='prepare';\
+                else\
+			echo "No Actions for Prepare Linux From Scratch";\
+                fi;\
+	elif [ "${r}" = "tools" ]; then\
+                if [ ! -z ${r} ] && [ "${s}" = "binutils" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{binutils: True}' --tags='tools';\
+                elif [ ! -z ${r} ] && [ "${s}" = "gcc" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{gcc: True}' --tags='tools';\
+                elif [ ! -z ${r} ] && [ "${s}" = "header" ]; then\
+                        ansible-playbook -i ansible-hosts  --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{header: True}' --tags='tools';\
+                elif [ ! -z ${r} ] && [ "${s}" = "glibc" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{glibc: True}' --tags='tools';\
+                elif [ ! -z ${r} ] && [ "${s}" = "libstdc" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{libstdc: True}' --tags='tools';\
+                elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{all_tools: True}' --tags='tools';\
+                else\
+			echo "No Actions for Build Tools";\
+                fi;\
+	elif [ "${r}" = "temp-tools" ]; then\
+                if [ ! -z ${r} ] &&  [ "${s}" != "all" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{"${s}": True}' --tags='temp-tools';\
+                elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{all_temp_tools: True}' --tags='temp-tools';\
+                else\
+			echo "No Actions for Build Temp Tools";\
+                fi;\
 	elif [ "${r}" = "uninstall" ]; then\
                 if [ ! -z ${r} ] && [ "${s}" = "mgr" ]; then\
                         ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_mgr: True}' --tags='uninstall';\
+                elif [ ! -z ${r} ] && [ "${s}" = "temp-tools" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{temp_tools: True}' --tags='uninstall';\
                 elif [ ! -z ${r} ] && [ "${s}" = "cctt" ]; then\
                         ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_cctt: True}' --tags='uninstall';\
                 elif [ ! -z ${r} ] && [ "${s}" = "bootstrap" ]; then\

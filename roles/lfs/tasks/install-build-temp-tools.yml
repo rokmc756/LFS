@@ -1,0 +1,85 @@
+---
+- name: Install M4
+  import_tasks: temp-tools/build-m4.yml
+  when: ( m4 is defined and m4 == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Ncurses
+  import_tasks: temp-tools/build-ncurses.yml
+  when: ( ncurses is defined and ncurses == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Bash
+  import_tasks: temp-tools/build-bash.yml
+  when: ( bash is defined and bash == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Coreutils
+  import_tasks: temp-tools/build-coreutils.yml
+  when: ( coreutils is defined and coreutils  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Diffutils
+  import_tasks: temp-tools/build-diffutils.yml
+  when: ( diffutils is defined and diffutils  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install File
+  import_tasks: temp-tools/build-file.yml
+  when: ( file is defined and file == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Findutils
+  import_tasks: temp-tools/build-findutils.yml
+  when: ( findutils is defined and findutils  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Gawk
+  import_tasks: temp-tools/build-gawk.yml
+  when: ( gawk is defined and gawk  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Grep
+  import_tasks: temp-tools/build-grep.yml
+  when: ( grep is defined and grep  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Gzip
+  import_tasks: temp-tools/build-gzip.yml
+  when: ( gzip is defined and gzip  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Make
+  import_tasks: temp-tools/build-make.yml
+  when: ( make is defined and make == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Patch
+  import_tasks: temp-tools/build-patch.yml
+  when: ( patch is defined and patch == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Sed
+  import_tasks: temp-tools/build-sed.yml
+  when: ( sed is defined and sed == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Tar
+  import_tasks: temp-tools/build-tar.yml
+  when: ( tar is defined and tar == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Xz
+  import_tasks: temp-tools/build-xz.yml
+  when: ( xz is defined and xz  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install Binutils
+  import_tasks: temp-tools/binutils-stage2.yml
+  when: ( binutils is defined and binutils  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
+
+- name: Install GCC
+  import_tasks: temp-tools/gcc-stage2.yml
+  when: ( gcc is defined and gcc  == true ) or ( all_temp_tools is defined and all_temp_tools == true )
+
