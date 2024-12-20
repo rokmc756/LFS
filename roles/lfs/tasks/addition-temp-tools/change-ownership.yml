@@ -5,7 +5,7 @@
 #
 # To address this issue, change the ownership of the $LFS/* directories to user root by running the following command:
 
-- name: Change the ownership of the all directories under $LFS
+- name: Change the Ownership of the All Directories under $LFS
   become_user: root
   shell: |
     chown --from lfs -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
@@ -15,7 +15,7 @@
     LFS: "{{ lfs.mnt_dir }}"
 
 
-- name: Change the ownership of the all directories under $LFS
+- name: Change the Ownership of the All Directories under $LFS
   become_user: root
   shell: |
     case $(uname -m) in

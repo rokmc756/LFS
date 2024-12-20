@@ -1,0 +1,35 @@
+---
+- debug: msg="config file version test"
+
+
+- name: "Find all files in the directory"
+  find:
+    paths: "{{ lfs.mnt_dir }}/sources"
+    patterns: '*.tar.*'
+    file_type: file
+  register : find_output
+
+
+- name: "loop through the .files output and then pick out the .path attribute"
+  debug: msg={{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower }}
+  loop: "{{ find_output.files }}"
+
+
+- name: "Loop through the .files output and then pick out the .path attribute"
+  debug: msg={{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | last }}
+  loop: "{{ find_output.files }}"
+
+
+- name: "Loop through the .files output and then pick out the .path attribute"
+  debug: msg={{ item.path.split('/')[4] | split('-') | last | split('tar.') | last }}
+  loop: "{{ find_output.files }}"
+
+
+#- name: Define Variables for Network Device Names and IP Addresses and All Network Addresses Provided by IP Addresses and Prefix of Netdev
+#  set_fact:
+#    "{{ 'ipaddr'~item.seq }}": "{{ hostvars[inventory_hostname]['ansible_'~ netfix ~ item.end_seq ].ipv4.address }}"
+#    "{{ 'all_net'~item.seq~'_ipaddrs' }}": "{{ groups['workers'] | map('extract', hostvars, ['ansible_' ~ netfix ~ item.end_seq, 'ipv4', 'address']) | join(',') }}"
+#    "{{ 'netdev'~item.seq }}": "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') | map('extract', vars) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', weka.backend.net['ipaddr'~item.seq] ) | map(attribute='device') | first }}"
+#  with_items: "{{ netdev_seq }}"
+#  when: inventory_hostname in groups['workers']
+

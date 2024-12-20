@@ -1,3 +1,4 @@
+---
 - name: Create a New MBR Label on the Disk, Along with the Boot Partition
   parted:
     device: "/dev/{{ lfs.root_dev }}"

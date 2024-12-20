@@ -59,6 +59,12 @@ lfs:
                 else\
 			echo "No Actions for Build Addition Temp Tools";\
                 fi;\
+	elif [ "${r}" = "config" ]; then\
+                if [ ! -z ${r} ] && [ "${s}" = "file" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{file: True}' --tags='config';\
+                else\
+			echo "No Actions for File Versions";\
+                fi;\
 	elif [ "${r}" = "uninstall" ]; then\
                 if [ ! -z ${r} ] && [ "${s}" = "mgr" ]; then\
                         ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_mgr: True}' --tags='uninstall';\

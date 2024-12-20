@@ -19,6 +19,11 @@
   tags: prepare
 
 
+- name: Config File Versions
+  import_tasks: config-file-versions.yml
+  tags: config
+
+
 - name: Install Build Tools
   import_tasks: install-build-tools.yml
   tags: tools
