@@ -1,0 +1,21 @@
+8.68.1. Installation of Libpipeline
+Prepare Libpipeline for compilation:
+
+./configure --prefix=/usr
+Compile the package:
+
+make
+To test the results, issue:
+
+make check
+Install the package:
+
+make install
+8.68.2. Contents of Libpipeline
+Installed library:
+libpipeline.so
+Short Descriptions
+libpipeline
+
+This library is used to safely construct pipelines between subprocesses
+

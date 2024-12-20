@@ -1,0 +1,26 @@
+8.59.1. Installation of Check
+Prepare Check for compilation:
+
+./configure --prefix=/usr --disable-static
+Build the package:
+
+make
+Compilation is now complete. To run the Check test suite, issue the following command:
+
+make check
+Install the package:
+
+make docdir=/usr/share/doc/check-0.15.2 install
+8.59.2. Contents of Check
+Installed program:
+checkmk
+Installed library:
+libcheck.so
+Short Descriptions
+checkmk
+
+Awk script for generating C unit tests for use with the Check unit testing framework
+
+libcheck.so
+
+Contains functions that allow Check to be called from a test program

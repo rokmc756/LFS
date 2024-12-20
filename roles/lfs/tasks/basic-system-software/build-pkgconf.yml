@@ -1,0 +1,34 @@
+Prepare Pkgconf for compilation:
+
+./configure --prefix=/usr              \
+            --disable-static           \
+            --docdir=/usr/share/doc/pkgconf-2.3.0
+Compile the package:
+
+make
+Install the package:
+
+make install
+To maintain compatibility with the original Pkg-config create two symlinks:
+
+ln -sv pkgconf   /usr/bin/pkg-config
+ln -sv pkgconf.1 /usr/share/man/man1/pkg-config.1
+8.19.2. Contents of Pkgconf
+Installed programs:
+pkgconf, pkg-config (link to pkgconf), and bomtool
+Installed library:
+libpkgconf.so
+Installed directory:
+/usr/share/doc/pkgconf-2.3.0
+Short Descriptions
+pkgconf
+
+Returns meta information for the specified library or package
+
+bomtool
+
+Generates a Software Bill Of Materials from pkg-config .pc files
+
+libpkgconf
+
+Contains most of pkgconf's functionality, while allowing other tools like IDEs and compilers to use its frameworks

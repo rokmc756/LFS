@@ -24,9 +24,14 @@
   tags: tools
 
 
-- name: Build Cross Compile Temp Tools
+- name: Install Build Temp Tools
   import_tasks: install-build-temp-tools.yml
   tags: temp-tools
+
+
+- name: Install Build Addition Temp Tools
+  import_tasks: install-build-addition-temp-tools.yml
+  tags: addition-temp-tools
 
 
 - name: Remove Build Directory for Cross Compile Temp Tools

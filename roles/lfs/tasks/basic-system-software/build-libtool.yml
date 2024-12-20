@@ -1,0 +1,36 @@
+Prepare Libtool for compilation:
+
+./configure --prefix=/usr
+Compile the package:
+
+make
+To test the results, issue:
+
+make -k check
+Five tests are known to fail in the LFS build environment due to a circular dependency, but these tests pass if rechecked after automake has been installed. Additionally, with grep-3.8 or newer, two tests will trigger a warning for non-POSIX regular expressions and fail.
+
+Install the package:
+
+make install
+Remove a useless static library:
+
+rm -fv /usr/lib/libltdl.a
+8.37.2. Contents of Libtool
+Installed programs:
+libtool and libtoolize
+Installed libraries:
+libltdl.so
+Installed directories:
+/usr/include/libltdl and /usr/share/libtool
+Short Descriptions
+libtool
+
+Provides generalized library-building support services
+
+libtoolize
+
+Provides a standard way to add libtool support to a package
+
+libltdl
+
+Hides the various difficulties of opening dynamically loaded libraries

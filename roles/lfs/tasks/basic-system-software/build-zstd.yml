@@ -1,0 +1,36 @@
+Compile the package:
+
+make prefix=/usr
+[Note] Note
+In the test output there are several places that indicate 'failed'. These are expected and only 'FAIL' is an actual test failure. There should be no test failures.
+
+To test the results, issue:
+
+make check
+Install the package:
+
+make prefix=/usr install
+Remove the static library:
+
+rm -v /usr/lib/libzstd.a
+8.10.2. Contents of Zstd
+Installed programs:
+zstd, zstdcat (link to zstd), zstdgrep, zstdless, zstdmt (link to zstd), and unzstd (link to zstd)
+Installed library:
+libzstd.so
+Short Descriptions
+zstd
+
+Compresses or decompresses files using the ZSTD format
+
+zstdgrep
+
+Runs grep on ZSTD compressed files
+
+zstdless
+
+Runs less on ZSTD compressed files
+
+libzstd
+
+The library implementing lossless data compression, using the ZSTD algorithm

@@ -1,0 +1,55 @@
+8.21.1. Installation of GMP
+[Note] Note
+If you are building for 32-bit x86, but you have a CPU which is capable of running 64-bit code and you have specified CFLAGS in the environment, the configure script will attempt to configure for 64-bits and fail. Avoid this by invoking the configure command below with
+
+ABI=32 ./configure ...
+[Note] Note
+The default settings of GMP produce libraries optimized for the host processor. If libraries suitable for processors less capable than the host's CPU are desired, generic libraries can be created by appending the --host=none-linux-gnu option to the configure command.
+
+Prepare GMP for compilation:
+
+./configure --prefix=/usr    \
+            --enable-cxx     \
+            --disable-static \
+            --docdir=/usr/share/doc/gmp-6.3.0
+The meaning of the new configure options:
+
+--enable-cxx
+This parameter enables C++ support
+
+--docdir=/usr/share/doc/gmp-6.3.0
+This variable specifies the correct place for the documentation.
+
+Compile the package and generate the HTML documentation:
+
+make
+make html
+[Important] Important
+The test suite for GMP in this section is considered critical. Do not skip it under any circumstances.
+
+Test the results:
+
+make check 2>&1 | tee gmp-check-log
+[Caution] Caution
+The code in gmp is highly optimized for the processor where it is built. Occasionally, the code that detects the processor misidentifies the system capabilities and there will be errors in the tests or other applications using the gmp libraries with the message Illegal instruction. In this case, gmp should be reconfigured with the option --host=none-linux-gnu and rebuilt.
+
+Ensure that at least 199 tests in the test suite passed. Check the results by issuing the following command:
+
+awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log
+Install the package and its documentation:
+
+make install
+make install-html
+8.21.2. Contents of GMP
+Installed libraries:
+libgmp.so and libgmpxx.so
+Installed directory:
+/usr/share/doc/gmp-6.3.0
+Short Descriptions
+libgmp
+
+Contains precision math functions
+
+libgmpxx
+
+Contains C++ precision math functions

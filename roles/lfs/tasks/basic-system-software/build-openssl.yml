@@ -1,0 +1,54 @@
+8.48.1. Installation of OpenSSL
+Prepare OpenSSL for compilation:
+
+./config --prefix=/usr         \
+         --openssldir=/etc/ssl \
+         --libdir=lib          \
+         shared                \
+         zlib-dynamic
+Compile the package:
+
+make
+To test the results, issue:
+
+HARNESS_JOBS=$(nproc) make test
+One test, 30-test_afalg.t, is known to fail if the host kernel does not have CONFIG_CRYPTO_USER_API_SKCIPHER enabled, or does not have any options providing an AES with CBC implementation (for example, the combination of CONFIG_CRYPTO_AES and CONFIG_CRYPTO_CBC, or CONFIG_CRYPTO_AES_NI_INTEL if the CPU supports AES-NI) enabled. If it fails, it can safely be ignored.
+
+Install the package:
+
+sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
+make MANSUFFIX=ssl install
+Add the version to the documentation directory name, to be consistent with other packages:
+
+mv -v /usr/share/doc/openssl /usr/share/doc/openssl-3.3.1
+If desired, install some additional documentation:
+
+cp -vfr doc/* /usr/share/doc/openssl-3.3.1
+[Note] Note
+You should update OpenSSL when a new version which fixes vulnerabilities is announced. Since OpenSSL 3.0.0, the OpenSSL versioning scheme follows the MAJOR.MINOR.PATCH format. API/ABI compatibility is guaranteed for the same MAJOR version number. Because LFS installs only the shared libraries, there is no need to recompile packages which link to libcrypto.so or libssl.so when upgrading to a version with the same MAJOR version number.
+
+However, any running programs linked to those libraries need to be stopped and restarted. Read the related entries in Section 8.2.1, “Upgrade Issues” for details.
+
+8.48.2. Contents of OpenSSL
+Installed programs:
+c_rehash and openssl
+Installed libraries:
+libcrypto.so and libssl.so
+Installed directories:
+/etc/ssl, /usr/include/openssl, /usr/lib/engines and /usr/share/doc/openssl-3.3.1
+Short Descriptions
+c_rehash
+
+is a Perl script that scans all files in a directory and adds symbolic links to their hash values. Use of c_rehash is considered obsolete and should be replaced by openssl rehash command
+
+openssl
+
+is a command-line tool for using the various cryptography functions of OpenSSL's crypto library from the shell. It can be used for various functions which are documented in openssl(1)
+
+libcrypto.so
+
+implements a wide range of cryptographic algorithms used in various Internet standards. The services provided by this library are used by the OpenSSL implementations of SSL, TLS and S/MIME, and they have also been used to implement OpenSSH, OpenPGP, and other cryptographic standards
+
+libssl.so
+
+implements the Transport Layer Security (TLS v1) protocol. It provides a rich API, documentation on which can be found in ssl(7)

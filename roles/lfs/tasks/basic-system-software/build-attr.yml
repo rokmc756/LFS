@@ -1,0 +1,38 @@
+Prepare Attr for compilation:
+
+./configure --prefix=/usr     \
+            --disable-static  \
+            --sysconfdir=/etc \
+            --docdir=/usr/share/doc/attr-2.5.2
+Compile the package:
+
+make
+The tests must be run on a filesystem that supports extended attributes such as the ext2, ext3, or ext4 filesystems. To test the results, issue:
+
+make check
+Install the package:
+
+make install
+8.24.2. Contents of Attr
+Installed programs:
+attr, getfattr, and setfattr
+Installed library:
+libattr.so
+Installed directories:
+/usr/include/attr and /usr/share/doc/attr-2.5.2
+Short Descriptions
+attr
+
+Extends attributes on filesystem objects
+
+getfattr
+
+Gets the extended attributes of filesystem objects
+
+setfattr
+
+Sets the extended attributes of filesystem objects
+
+libattr
+
+Contains the library functions for manipulating extended attributes

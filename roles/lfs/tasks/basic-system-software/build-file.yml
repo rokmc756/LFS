@@ -1,0 +1,25 @@
+Prepare File for compilation:
+
+./configure --prefix=/usr
+Compile the package:
+
+make
+To test the results, issue:
+
+make check
+Install the package:
+
+make install
+8.11.2. Contents of File
+Installed programs:
+file
+Installed library:
+libmagic.so
+Short Descriptions
+file
+
+Tries to classify each given file; it does this by performing several tests—file system tests, magic number tests, and language tests
+
+libmagic
+
+Contains routines for magic number recognition, used by the file program

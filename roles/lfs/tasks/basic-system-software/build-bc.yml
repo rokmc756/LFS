@@ -1,0 +1,37 @@
+Prepare Bc for compilation:
+
+CC=gcc ./configure --prefix=/usr -G -O3 -r
+The meaning of the configure options:
+
+CC=gcc
+This parameter specifies the compiler to use.
+
+-G
+Omit parts of the test suite that won't work until the bc program has been installed.
+
+-O3
+Specify the optimization to use.
+
+-r
+Enable the use of Readline to improve the line editing feature of bc.
+
+Compile the package:
+
+make
+To test bc, run:
+
+make test
+Install the package:
+
+make install
+8.14.2. Contents of Bc
+Installed programs:
+bc and dc
+Short Descriptions
+bc
+
+A command line calculator
+
+dc
+
+A reverse-polish command line calculator

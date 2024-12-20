@@ -1,0 +1,55 @@
+Prepare Bash for compilation:
+
+./configure --prefix=/usr             \
+            --without-bash-malloc     \
+            --with-installed-readline \
+            bash_cv_strtold_broken=no \
+            --docdir=/usr/share/doc/bash-5.2.32
+The meaning of the new configure option:
+
+--with-installed-readline
+This option tells Bash to use the readline library that is already installed on the system rather than using its own readline version.
+
+Compile the package:
+
+make
+Skip down to “Install the package” if not running the test suite.
+
+To prepare the tests, ensure that the tester user can write to the sources tree:
+
+chown -R tester .
+The test suite of this package is designed to be run as a non-root user who owns the terminal connected to standard input. To satisfy the requirement, spawn a new pseudo terminal using Expect and run the tests as the tester user:
+
+su -s /usr/bin/expect tester << "EOF"
+set timeout -1
+spawn make tests
+expect eof
+lassign [wait] _ _ _ value
+exit $value
+EOF
+The test suite uses diff to detect the difference between test script output and the expected output. Any output from diff (prefixed with < and >) indicates a test failure, unless there is a message saying the difference can be ignored. One test named run-builtins is known to fail on some host distros with a difference on the first line of the output.
+
+Install the package:
+
+make install
+Run the newly compiled bash program (replacing the one that is currently being executed):
+
+exec /usr/bin/bash --login
+8.36.2. Contents of Bash
+Installed programs:
+bash, bashbug, and sh (link to bash)
+Installed directory:
+/usr/include/bash, /usr/lib/bash, and /usr/share/doc/bash-5.2.32
+Short Descriptions
+bash
+
+A widely-used command interpreter; it performs many types of expansions and substitutions on a given command line before executing it, thus making this interpreter a powerful tool
+
+bashbug
+
+A shell script to help the user compose and mail standard formatted bug reports concerning bash
+
+sh
+
+A symlink to the bash program; when invoked as sh, bash tries to mimic the startup behavior of historical versions of sh as closely as possible, while conforming to the POSIX standard as well
+

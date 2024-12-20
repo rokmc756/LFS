@@ -1,0 +1,41 @@
+8.62.1. Installation of Findutils
+Prepare Findutils for compilation:
+
+./configure --prefix=/usr --localstatedir=/var/lib/locate
+The meaning of the configure options:
+
+--localstatedir
+This option moves the locate database to /var/lib/locate, which is the FHS-compliant location.
+
+Compile the package:
+
+make
+To test the results, issue:
+
+chown -R tester .
+su tester -c "PATH=$PATH make check"
+Install the package:
+
+make install
+8.62.2. Contents of Findutils
+Installed programs:
+find, locate, updatedb, and xargs
+Installed directory:
+/var/lib/locate
+Short Descriptions
+find
+
+Searches given directory trees for files matching the specified criteria
+
+locate
+
+Searches through a database of file names and reports the names that contain a given string or match a given pattern
+
+updatedb
+
+Updates the locate database; it scans the entire file system (including other file systems that are currently mounted, unless told not to) and puts every file name it finds into the database
+
+xargs
+
+Can be used to apply a given command to a list of files
+

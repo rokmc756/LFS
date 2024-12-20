@@ -1,0 +1,41 @@
+Prepare Flex for compilation:
+
+./configure --prefix=/usr \
+            --docdir=/usr/share/doc/flex-2.6.4 \
+            --disable-static
+Compile the package:
+
+make
+To test the results (about 0.5 SBU), issue:
+
+make check
+Install the package:
+
+make install
+A few programs do not know about flex yet and try to run its predecessor, lex. To support those programs, create a symbolic link named lex that runs flex in lex emulation mode, and also create the man page of lex as a symlink:
+
+ln -sv flex   /usr/bin/lex
+ln -sv flex.1 /usr/share/man/man1/lex.1
+8.15.2. Contents of Flex
+Installed programs:
+flex, flex++ (link to flex), and lex (link to flex)
+Installed libraries:
+libfl.so
+Installed directory:
+/usr/share/doc/flex-2.6.4
+Short Descriptions
+flex
+
+A tool for generating programs that recognize patterns in text; it allows for the versatility to specify the rules for pattern-finding, eradicating the need to develop a specialized program
+
+flex++
+
+An extension of flex, is used for generating C++ code and classes. It is a symbolic link to flex
+
+lex
+
+A symbolic link that runs flex in lex emulation mode
+
+libfl
+
+The flex library

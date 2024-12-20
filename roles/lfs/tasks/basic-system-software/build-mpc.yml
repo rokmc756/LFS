@@ -1,0 +1,26 @@
+8.23.1. Installation of MPC
+Prepare MPC for compilation:
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/mpc-1.3.1
+Compile the package and generate the HTML documentation:
+
+make
+make html
+To test the results, issue:
+
+make check
+Install the package and its documentation:
+
+make install
+make install-html
+8.23.2. Contents of MPC
+Installed libraries:
+libmpc.so
+Installed directory:
+/usr/share/doc/mpc-1.3.1
+Short Descriptions
+libmpc
+
+Contains complex math functions

@@ -1,0 +1,46 @@
+8.27.1. Installation of Libxcrypt
+Prepare Libxcrypt for compilation:
+
+./configure --prefix=/usr                \
+            --enable-hashes=strong,glibc \
+            --enable-obsolete-api=no     \
+            --disable-static             \
+            --disable-failure-tokens
+The meaning of the new configure options:
+
+--enable-hashes=strong,glibc
+Build strong hash algorithms recommended for security use cases, and the hash algorithms provided by traditional Glibc libcrypt for compatibility.
+
+--enable-obsolete-api=no
+Disable obsolete API functions. They are not needed for a modern Linux system built from source.
+
+--disable-failure-tokens
+Disable failure token feature. It's needed for compatibility with the traditional hash libraries of some platforms, but a Linux system based on Glibc does not need it.
+
+Compile the package:
+
+make
+To test the results, issue:
+
+make check
+Install the package:
+
+make install
+[Note] Note
+The instructions above disabled obsolete API functions since no package installed by compiling from sources would link against them at runtime. However, the only known binary-only applications that link against these functions require ABI version 1. If you must have such functions because of some binary-only application or to be compliant with LSB, build the package again with the following commands:
+
+make distclean
+./configure --prefix=/usr                \
+            --enable-hashes=strong,glibc \
+            --enable-obsolete-api=glibc  \
+            --disable-static             \
+            --disable-failure-tokens
+make
+cp -av --remove-destination .libs/libcrypt.so.1* /usr/lib
+8.27.2. Contents of Libxcrypt
+Installed libraries:
+libcrypt.so
+Short Descriptions
+libcrypt
+
+Contains functions to hash passwords

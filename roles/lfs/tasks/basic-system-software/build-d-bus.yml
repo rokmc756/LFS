@@ -1,0 +1,82 @@
+8.77.1. Installation of D-Bus
+Prepare D-Bus for compilation:
+
+./configure --prefix=/usr                        \
+            --sysconfdir=/etc                    \
+            --localstatedir=/var                 \
+            --runstatedir=/run                   \
+            --enable-user-session                \
+            --disable-static                     \
+            --disable-doxygen-docs               \
+            --disable-xml-docs                   \
+            --docdir=/usr/share/doc/dbus-1.14.10 \
+            --with-system-socket=/run/dbus/system_bus_socket
+The meaning of the configure options:
+
+--runstatedir=/run and --with-system-socket=/run/dbus/system_bus_socket
+These cause the PID file and the system bus socket to be in /run, instead of the deprecated /var/run.
+
+--enable-user-session
+This ensures the D-Bus per-user service and socket unit files are installed for Systemd. They are not useful (but harmless) in a base LFS installation, however they can be used once systemd is rebuilt with PAM support in BLFS.
+
+Compile the package:
+
+make
+To test the results, issue:
+
+make check
+Many tests are disabled because they require additional packages that are not included in LFS. Instructions for running the comprehensive test suite can be found in the BLFS book.
+
+Install the package:
+
+make install
+Create a symlink so that D-Bus and systemd can use the same machine-id file:
+
+ln -sfv /etc/machine-id /var/lib/dbus
+8.77.2. Contents of D-Bus
+Installed programs:
+dbus-cleanup-sockets, dbus-daemon, dbus-launch, dbus-monitor, dbus-run-session, dbus-send, dbus-test-tool, dbus-update-activation-environment, and dbus-uuidgen
+Installed libraries:
+libdbus-1.so
+Installed directories:
+/etc/dbus-1, /usr/include/dbus-1.0, /usr/lib/dbus-1.0, /usr/share/dbus-1, /usr/share/doc/dbus-1.14.10, and /var/lib/dbus
+Short Descriptions
+dbus-cleanup-sockets
+
+is used to remove leftover sockets in a directory
+
+dbus-daemon
+
+Is the D-Bus message bus daemon
+
+dbus-launch
+
+Starts dbus-daemon from a shell script
+
+dbus-monitor
+
+Monitors messages passing through a D-Bus message bus
+
+dbus-run-session
+
+Starts a session bus instance of dbus-daemon from a shell script and starts a specified program in that session
+
+dbus-send
+
+Sends a message to a D-Bus message bus
+
+dbus-test-tool
+
+Is a tool to help packages test D-Bus
+
+dbus-update-activation-environment
+
+Updates environment variables that will be set for D-Bus session services
+
+dbus-uuidgen
+
+Generates a universally unique ID
+
+libdbus-1
+
+Contains API functions used to communicate with the D-Bus message bus

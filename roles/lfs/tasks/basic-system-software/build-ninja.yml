@@ -1,0 +1,40 @@
+8.56.1. Installation of Ninja
+When run, ninja normally utilizes the greatest possible number of processes in parallel. By default this is the number of cores on the system, plus two. This may overheat the CPU, or make the system run out of memory. When ninja is invoked from the command line, passing the -jN parameter will limit the number of parallel processes. Some packages embed the execution of ninja, and do not pass the -j parameter on to it.
+
+Using the optional procedure below allows a user to limit the number of parallel processes via an environment variable, NINJAJOBS. For example, setting:
+
+export NINJAJOBS=4
+will limit ninja to four parallel processes.
+
+If desired, make ninja recognize the environment variable NINJAJOBS by running the stream editor:
+
+sed -i '/int Guess/a \
+  int   j = 0;\
+  char* jobs = getenv( "NINJAJOBS" );\
+  if ( jobs != NULL ) j = atoi( jobs );\
+  if ( j > 0 ) return j;\
+' src/ninja.cc
+Build Ninja with:
+
+python3 configure.py --bootstrap
+The meaning of the build option:
+
+--bootstrap
+This parameter forces Ninja to rebuild itself for the current system.
+
+The package tests cannot run in the chroot environment. They require cmake.
+
+Install the package:
+
+install -vm755 ninja /usr/bin/
+install -vDm644 misc/bash-completion /usr/share/bash-completion/completions/ninja
+install -vDm644 misc/zsh-completion  /usr/share/zsh/site-functions/_ninja
+8.56.2. Contents of Ninja
+Installed programs:
+ninja
+Short Descriptions
+ninja
+
+is the Ninja build system
+
+

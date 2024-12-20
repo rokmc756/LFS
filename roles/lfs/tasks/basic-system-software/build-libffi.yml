@@ -1,0 +1,30 @@
+8.51.1. Installation of Libffi
+[Note] Note
+Like GMP, Libffi builds with optimizations specific to the processor in use. If building for another system, change the value of the --with-gcc-arch= parameter in the following command to an architecture name fully implemented by the CPU on that system. If this is not done, all applications that link to libffi will trigger Illegal Operation Errors.
+
+Prepare Libffi for compilation:
+
+./configure --prefix=/usr          \
+            --disable-static       \
+            --with-gcc-arch=native
+The meaning of the configure option:
+
+--with-gcc-arch=native
+Ensure GCC optimizes for the current system. If this is not specified, the system is guessed and the code generated may not be correct. If the generated code will be copied from the native system to a less capable system, use the less capable system as a parameter. For details about alternative system types, see the x86 options in the GCC manual.
+
+Compile the package:
+
+make
+To test the results, issue:
+
+make check
+Install the package:
+
+make install
+8.51.2. Contents of Libffi
+Installed library:
+libffi.so
+Short Descriptions
+libffi
+
+Contains the foreign function interface API functions

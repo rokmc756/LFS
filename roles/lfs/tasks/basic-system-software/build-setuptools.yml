@@ -1,0 +1,12 @@
+8.55.1. Installation of Setuptools
+Build the package:
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
+Install the package:
+
+pip3 install --no-index --find-links dist setuptools
+8.55.2. Contents of Setuptools
+Installed directory:
+/usr/lib/python3.12/site-packages/_distutils_hack, /usr/lib/python3.12/site-packages/pkg_resources, /usr/lib/python3.12/site-packages/setuptools, and /usr/lib/python3.12/site-packages/setuptools-72.2.0.dist-info
+
+

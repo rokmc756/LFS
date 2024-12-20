@@ -1,0 +1,33 @@
+8.31. Sed-4.9
+The Sed package contains a stream editor.
+
+Approximate build time:
+0.3 SBU
+Required disk space:
+30 MB
+8.31.1. Installation of Sed
+Prepare Sed for compilation:
+
+./configure --prefix=/usr
+Compile the package and generate the HTML documentation:
+
+make
+make html
+To test the results, issue:
+
+chown -R tester .
+su tester -c "PATH=$PATH make check"
+Install the package and its documentation:
+
+make install
+install -d -m755           /usr/share/doc/sed-4.9
+install -m644 doc/sed.html /usr/share/doc/sed-4.9
+8.31.2. Contents of Sed
+Installed program:
+sed
+Installed directory:
+/usr/share/doc/sed-4.9
+Short Descriptions
+sed
+
+Filters and transforms text files in a single pass

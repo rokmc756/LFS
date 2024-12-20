@@ -1,0 +1,89 @@
+The Tcl package contains the Tool Command Language, a robust general-purpose scripting language. The Expect package is written in Tcl (pronounced "tickle").
+
+Approximate build time:
+3.2 SBU
+Required disk space:
+91 MB
+8.16.1. Installation of Tcl
+This package and the next two (Expect and DejaGNU) are installed to support running the test suites for Binutils, GCC and other packages. Installing three packages for testing purposes may seem excessive, but it is very reassuring, if not essential, to know that the most important tools are working properly.
+
+Prepare Tcl for compilation:
+
+SRCDIR=$(pwd)
+cd unix
+./configure --prefix=/usr           \
+            --mandir=/usr/share/man \
+            --disable-rpath
+The meaning of the new configure parameters:
+
+--disable-rpath
+This parameter prevents hard coding library search paths (rpath) into the binary executable files and shared libraries. This package does not need rpath for an installation into the standard location, and rpath may sometimes cause unwanted effects or even security issues.
+
+Build the package:
+
+make
+
+sed -e "s|$SRCDIR/unix|/usr/lib|" \
+    -e "s|$SRCDIR|/usr/include|"  \
+    -i tclConfig.sh
+
+sed -e "s|$SRCDIR/unix/pkgs/tdbc1.1.7|/usr/lib/tdbc1.1.7|" \
+    -e "s|$SRCDIR/pkgs/tdbc1.1.7/generic|/usr/include|"    \
+    -e "s|$SRCDIR/pkgs/tdbc1.1.7/library|/usr/lib/tcl8.6|" \
+    -e "s|$SRCDIR/pkgs/tdbc1.1.7|/usr/include|"            \
+    -i pkgs/tdbc1.1.7/tdbcConfig.sh
+
+sed -e "s|$SRCDIR/unix/pkgs/itcl4.2.4|/usr/lib/itcl4.2.4|" \
+    -e "s|$SRCDIR/pkgs/itcl4.2.4/generic|/usr/include|"    \
+    -e "s|$SRCDIR/pkgs/itcl4.2.4|/usr/include|"            \
+    -i pkgs/itcl4.2.4/itclConfig.sh
+
+unset SRCDIR
+The various “sed” instructions after the “make” command remove references to the build directory from the configuration files and replace them with the install directory. This is not mandatory for the remainder of LFS, but may be needed if a package built later uses Tcl.
+
+To test the results, issue:
+
+make test
+Install the package:
+
+make install
+Make the installed library writable so debugging symbols can be removed later:
+
+chmod -v u+w /usr/lib/libtcl8.6.so
+Install Tcl's headers. The next package, Expect, requires them.
+
+make install-private-headers
+Now make a necessary symbolic link:
+
+ln -sfv tclsh8.6 /usr/bin/tclsh
+Rename a man page that conflicts with a Perl man page:
+
+mv /usr/share/man/man3/{Thread,Tcl_Thread}.3
+Optionally, install the documentation by issuing the following commands:
+
+cd ..
+tar -xf ../tcl8.6.14-html.tar.gz --strip-components=1
+mkdir -v -p /usr/share/doc/tcl-8.6.14
+cp -v -r  ./html/* /usr/share/doc/tcl-8.6.14
+8.16.2. Contents of Tcl
+Installed programs:
+tclsh (link to tclsh8.6) and tclsh8.6
+Installed library:
+libtcl8.6.so and libtclstub8.6.a
+Short Descriptions
+tclsh8.6
+
+The Tcl command shell
+
+tclsh
+
+A link to tclsh8.6
+
+libtcl8.6.so
+
+The Tcl library
+
+libtclstub8.6.a
+
+The Tcl Stub library
+

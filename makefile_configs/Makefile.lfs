@@ -51,6 +51,14 @@ lfs:
                 else\
 			echo "No Actions for Build Temp Tools";\
                 fi;\
+	elif [ "${r}" = "addition-temp-tools" ]; then\
+                if [ ! -z ${r} ] &&  [ "${s}" != "all" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{"${s}": True}' --tags='addition-temp-tools';\
+                elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+                        ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{all_addition_temp_tools: True}' --tags='addition-temp-tools';\
+                else\
+			echo "No Actions for Build Addition Temp Tools";\
+                fi;\
 	elif [ "${r}" = "uninstall" ]; then\
                 if [ ! -z ${r} ] && [ "${s}" = "mgr" ]; then\
                         ansible-playbook -i ansible-hosts --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-lfs.yml -e '{uninstall_mgr: True}' --tags='uninstall';\
@@ -68,7 +76,7 @@ lfs:
 			echo "No Actions for Uninstall Linux From Scratch";\
                 fi;\
 	else\
-		echo "No Actions for OKD";\
+		echo "No Actions for LFS";\
 		exit;\
 	fi
 

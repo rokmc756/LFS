@@ -1,0 +1,21 @@
+8.69.1. Installation of Make
+Prepare Make for compilation:
+
+./configure --prefix=/usr
+Compile the package:
+
+make
+To test the results, issue:
+
+chown -R tester .
+su tester -c "PATH=$PATH make check"
+Install the package:
+
+make install
+8.69.2. Contents of Make
+Installed program:
+make
+Short Descriptions
+make
+
+Automatically determines which pieces of a package need to be (re)compiled and then issues the relevant commands

@@ -1,0 +1,28 @@
+Thank you for reading this LFS book. We hope that you have found this book helpful and have learned more about the system creation process.
+
+Now that the LFS system is installed, you may be wondering “What next?” To answer that question, we have compiled a list of resources for you.
+
+Maintenance
+
+Bugs and security notices are reported regularly for all software. Since an LFS system is compiled from source, it is up to you to keep abreast of such reports. There are several online resources that track such reports, some of which are shown below:
+
+LFS Security Advisories
+
+This is a list of security vulnerabilities discovered in the LFS book after it's published.
+
+Open Source Security Mailing List
+
+This is a mailing list for discussion of security flaws, concepts, and practices in the Open Source community.
+
+LFS Hints
+
+The LFS Hints are a collection of educational documents submitted by volunteers in the LFS community. The hints are available at https://www.linuxfromscratch.org/hints/downloads/files/.
+
+Mailing lists
+
+There are several LFS mailing lists you may subscribe to if you are in need of help, want to stay current with the latest developments, want to contribute to the project, and more. See Chapter 1 - Mailing Lists for more information.
+
+The Linux Documentation Project
+
+The goal of The Linux Documentation Project (TLDP) is to collaborate on all of the issues of Linux documentation. The TLDP features a large collection of HOWTOs, guides, and man pages. It is located at https://tldp.org/.
+

@@ -1,61 +1,60 @@
 ---
 - name: Change Ownership
-  import_tasks: addtion-temp-tools/change-ownership.yml
+  import_tasks: addition-temp-tools/change-ownership.yml
   when: ( chown is defined and chown == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Prepare Virtual Kernel File Systems
-  import_tasks: addtion-temp-tools/prepare-virtual-kernel-file-systems.yml
-  when: ( virtual_file_systems is defined virtual_file_systems and == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
+  import_tasks: addition-temp-tools/prepare-virtual-kernel-file-systems.yml
+  when: ( vfs is defined and vfs == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Enter the Chroot Environment
-  import_tasks: addtion-temp-tools/enter-chroot-env.yml
+  import_tasks: addition-temp-tools/enter-chroot-env.yml
   when: ( chroot is defined and chroot == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Create Directories
-  import_tasks: addtion-temp-tools/create-dirs.yml
+  import_tasks: addition-temp-tools/create-dirs.yml
   when: ( create_dirs is defined and create_dirs == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Create Essential Files and Symlinks
-  import_tasks: addtion-temp-tools/create-essential-files-symlinks.yml
+  import_tasks: addition-temp-tools/create-essential-files-symlinks.yml
   when: ( create_files is defined create_files and == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Build Gettext
-  import_tasks: addtion-temp-tools/build-gettext.yml
+  import_tasks: addition-temp-tools/build-gettext.yml
   when: ( gettext is defined and gettext == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
-- name: Build bison
-  import_tasks: addtion-temp-tools/build-bison.yml
-  when: ( bison is defined bison and == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
+- name: Build Bison
+  import_tasks: addition-temp-tools/build-bison.yml
+  when: ( bison is defined and bison == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Build Perl
-  import_tasks: addtion-temp-tools/build-perl.yml
+  import_tasks: addition-temp-tools/build-perl.yml
   when: ( perl is defined and perl == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Build Python
-  import_tasks: addtion-temp-tools/build-python.yml
+  import_tasks: addition-temp-tools/build-python.yml
   when: ( python is defined and python == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Build Textinfo
-  import_tasks: addtion-temp-tools/build-texinfo.yml
+  import_tasks: addition-temp-tools/build-texinfo.yml
   when: ( textinfo is defined and textinfo == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Buil Util-linux
-  import_tasks: addtion-temp-tools/build-util-linux.yml
-  when: ( util_linux is defined util_linux and == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
+  import_tasks: addition-temp-tools/build-util-linux.yml
+  when: ( util_linux is defined and util_linux == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 
 
 - name: Cleaning up and Saving the Temporary System
-  import_tasks: addtion-temp-tools/cleanup-save-temp-system.yml
-  when: ( clean_temp is defined clean_temp and == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
-
+  import_tasks: addition-temp-tools/cleanup-save-temp-system.yml
+  when: ( clean_temp is defined and clean_temp == true ) or ( all_addition_temp_tools is defined and all_addition_temp_tools == true )
 

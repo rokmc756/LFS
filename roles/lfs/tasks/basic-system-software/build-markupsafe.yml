@@ -1,0 +1,12 @@
+8.74.1. Installation of MarkupSafe
+Compile MarkupSafe with the following command:
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
+This package does not come with a test suite.
+
+Install the package:
+
+pip3 install --no-index --no-user --find-links dist Markupsafe
+8.74.2. Contents of MarkupSafe
+Installed directory:
+/usr/lib/python3.12/site-packages/MarkupSafe-2.1.5.dist-info

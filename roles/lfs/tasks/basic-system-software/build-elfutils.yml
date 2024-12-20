@@ -1,0 +1,35 @@
+8.50. Libelf from Elfutils-0.191
+Libelf is a library for handling ELF (Executable and Linkable Format) files.
+
+Approximate build time:
+0.3 SBU
+Required disk space:
+127 MB
+8.50.1. Installation of Libelf
+Libelf is part of the elfutils-0.191 package. Use the elfutils-0.191.tar.bz2 file as the source tarball.
+
+Prepare Libelf for compilation:
+
+./configure --prefix=/usr                \
+            --disable-debuginfod         \
+            --enable-libdebuginfod=dummy
+Compile the package:
+
+make
+To test the results, issue:
+
+make check
+Install only Libelf:
+
+make -C libelf install
+install -vm644 config/libelf.pc /usr/lib/pkgconfig
+rm /usr/lib/libelf.a
+8.50.2. Contents of Libelf
+Installed library:
+libelf.so
+Installed directory:
+/usr/include/elfutils
+Short Descriptions
+libelf.so
+
+Contains API functions to handle ELF object files

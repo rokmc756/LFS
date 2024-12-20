@@ -1,0 +1,30 @@
+8.53.1. Installation of Flit-Core
+Build the package:
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
+Install the package:
+
+pip3 install --no-index --no-user --find-links dist flit_core
+The meaning of the pip3 configuration options and commands:
+
+wheel
+This command builds the wheel archive for this package.
+
+-w dist
+Instructs pip to put the created wheel into the dist directory.
+
+--no-cache-dir
+Prevents pip from copying the created wheel into the /root/.cache/pip directory.
+
+install
+This command installs the package.
+
+--no-build-isolation, --no-deps, and --no-index
+These options prevent fetching files from the online package repository (PyPI). If packages are installed in the correct order, pip won't need to fetch any files in the first place; these options add some safety in case of user error.
+
+--find-links dist
+Instructs pip to search for wheel archives in the dist directory.
+
+8.53.2. Contents of Flit-Core
+Installed directory:
+/usr/lib/python3.12/site-packages/flit_core and /usr/lib/python3.12/site-packages/flit_core-3.9.0.dist-info

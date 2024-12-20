@@ -1,0 +1,223 @@
+10.3.1. Installation of the kernel
+Building the kernel involves a few steps—configuration, compilation, and installation. Read the README file in the kernel source tree for alternative methods to the way this book configures the kernel.
+
+[Important] Important
+Building the linux kernel for the first time is one of the most challenging tasks in LFS. Getting it right depends on the specific hardware for the target system and your specific needs. There are almost 12,000 configuration items that are available for the kernel although only about a third of them are needed for most computers. The LFS editors recommend that users not familiar with this process follow the procedures below fairly closely. The objective is to get an initial system to a point where you can log in at the command line when you reboot later in Section 11.3, “Rebooting the System.” At this point optimization and customization is not a goal.
+
+For general information on kernel configuration see https://www.linuxfromscratch.org/hints/downloads/files/kernel-configuration.txt. Additional information about configuring and building the kernel can be found at https://anduin.linuxfromscratch.org/LFS/kernel-nutshell/. These references are a bit dated, but still give a reasonable overview of the process.
+
+If all else fails, you can ask for help on the lfs-support mailing list. Note that subscribing is required in order for the list to avoid spam.
+
+Prepare for compilation by running the following command:
+
+make mrproper
+This ensures that the kernel tree is absolutely clean. The kernel team recommends that this command be issued prior to each kernel compilation. Do not rely on the source tree being clean after un-tarring.
+
+There are several ways to configure the kernel options. Usually, this is done through a menu-driven interface, for example:
+
+make menuconfig
+The meaning of optional make environment variables:
+
+LANG=<host_LANG_value> LC_ALL=
+This establishes the locale setting to the one used on the host. This may be needed for a proper menuconfig ncurses interface line drawing on a UTF-8 linux text console.
+
+If used, be sure to replace <host_LANG_value> by the value of the $LANG variable from your host. You can alternatively use instead the host's value of $LC_ALL or $LC_CTYPE.
+
+make menuconfig
+This launches an ncurses menu-driven interface. For other (graphical) interfaces, type make help.
+
+[Note] Note
+A good starting place for setting up the kernel configuration is to run make defconfig. This will set the base configuration to a good state that takes your current system architecture into account.
+
+Be sure to enable/disable/set the following features or the system might not work correctly or boot at all:
+
+General setup --->
+  [ ] Compile the kernel with warnings as errors                        [WERROR]
+  CPU/Task time and stats accounting --->
+    [*] Pressure stall information tracking                                [PSI]
+    [ ]   Require boot parameter to enable pressure stall information tracking
+                                                     ...  [PSI_DEFAULT_DISABLED]
+  < > Enable kernel headers through /sys/kernel/kheaders.tar.xz      [IKHEADERS]
+  [*] Control Group support --->                                       [CGROUPS]
+    [*]   Memory controller                                              [MEMCG]
+    [ /*] CPU controller --->                                     [CGROUP_SCHED]
+      # This may cause some systemd features malfunction:
+      [ ] Group scheduling for SCHED_RR/FIFO                    [RT_GROUP_SCHED]
+  [ ] Configure standard kernel features (expert users) --->            [EXPERT]
+
+Processor type and features --->
+  [*] Build a relocatable kernel                                   [RELOCATABLE]
+  [*]   Randomize the address of the kernel image (KASLR)       [RANDOMIZE_BASE]
+
+General architecture-dependent options --->
+  [*] Stack Protector buffer overflow detection                 [STACKPROTECTOR]
+  [*]   Strong Stack Protector                           [STACKPROTECTOR_STRONG]
+
+[*] Networking support --->                                                [NET]
+  Networking options --->
+    [*] TCP/IP networking                                                 [INET]
+    <*>   The IPv6 protocol --->                                          [IPV6]
+
+Device Drivers --->
+  Generic Driver Options --->
+    [ ] Support for uevent helper                                [UEVENT_HELPER]
+    [*] Maintain a devtmpfs filesystem to mount at /dev               [DEVTMPFS]
+    [*]   Automount devtmpfs at /dev, after the kernel mounted the rootfs
+                                                           ...  [DEVTMPFS_MOUNT]
+    Firmware loader --->
+      < /*> Firmware loading facility                                [FW_LOADER]
+      [ ]     Enable the firmware sysfs fallback mechanism
+                                                    ...  [FW_LOADER_USER_HELPER]
+  Firmware Drivers --->
+    [*] Export DMI identification via sysfs to userspace                 [DMIID]
+  Graphics support --->
+    < /*/M> Direct Rendering Manager (XFree86 4.1.0 and higher DRI support) --->
+                                                                      ...  [DRM]
+      # If [DRM] is selected as * or M, this must be selected:
+      [ /*] Enable legacy fbdev support for your modesetting driver
+                                                      ...  [DRM_FBDEV_EMULATION]
+    Console display driver support --->
+      # If [DRM] is selected as * or M, this must be selected:
+      [ /*] Framebuffer Console support                    [FRAMEBUFFER_CONSOLE]
+
+File systems --->
+  [*] Inotify support for userspace                               [INOTIFY_USER]
+  Pseudo filesystems --->
+    [*] Tmpfs virtual memory file system support (former shm fs)         [TMPFS]
+    [*]   Tmpfs POSIX Access Control Lists                     [TMPFS_POSIX_ACL]
+Enable some additional features if you are building a 64-bit system. If you are using menuconfig, enable them in the order of CONFIG_PCI_MSI first, then CONFIG_IRQ_REMAP, at last CONFIG_X86_X2APIC because an option only shows up after its dependencies are selected.
+
+Processor type and features --->
+  [*] Support x2apic                                                [X86_X2APIC]
+
+Device Drivers --->
+  [*] PCI support --->                                                     [PCI]
+    [*] Message Signaled Interrupts (MSI and MSI-X)                    [PCI_MSI]
+  [*] IOMMU Hardware Support --->                                [IOMMU_SUPPORT]
+    [*] Support for Interrupt Remapping                              [IRQ_REMAP]
+If you are building a 32-bit system running on a hardware with RAM more than 4GB, adjust the configuration so the kernel will be able to use up to 64GB physical RAM:
+
+Processor type and features --->
+  High Memory Support --->
+    (X) 64GB                                                        [HIGHMEM64G]
+If the partition for the LFS system is in a NVME SSD (i. e. the device node for the partition is /dev/nvme* instead of /dev/sd*), enable NVME support or the LFS system won't boot:
+
+Device Drivers --->
+  NVME Support --->
+    <*> NVM Express block device                                  [BLK_DEV_NVME]
+[Note] Note
+While "The IPv6 Protocol" is not strictly required, it is highly recommended by the systemd developers.
+
+There are several other options that may be desired depending on the requirements for the system. For a list of options needed for BLFS packages, see the BLFS Index of Kernel Settings.
+
+[Note] Note
+If your host hardware is using UEFI and you wish to boot the LFS system with it, you should adjust some kernel configuration following the BLFS page even if you'll use the UEFI bootloader from the host distro.
+
+The rationale for the above configuration items:
+
+Randomize the address of the kernel image (KASLR)
+Enable ASLR for kernel image, to mitigate some attacks based on fixed addresses of sensitive data or code in the kernel.
+
+Compile the kernel with warnings as errors
+This may cause building failure if the compiler and/or configuration are different from those of the kernel developers.
+
+Enable kernel headers through /sys/kernel/kheaders.tar.xz
+This will require cpio building the kernel. cpio is not installed by LFS.
+
+Configure standard kernel features (expert users)
+This will make some options show up in the configuration interface but changing those options may be dangerous. Do not use this unless you know what you are doing.
+
+Strong Stack Protector
+Enable SSP for the kernel. We've enabled it for the entire userspace with --enable-default-ssp configuring GCC, but the kernel does not use GCC default setting for SSP. We enable it explicitly here.
+
+Support for uevent helper
+Having this option set may interfere with device management when using Udev.
+
+Maintain a devtmpfs
+This will create automated device nodes which are populated by the kernel, even without Udev running. Udev then runs on top of this, managing permissions and adding symlinks. This configuration item is required for all users of Udev.
+
+Automount devtmpfs at /dev
+This will mount the kernel view of the devices on /dev upon switching to root filesystem just before starting init.
+
+Enable legacy fbdev support for your modesetting driver and Framebuffer Console support
+These are needed to display the Linux console on a GPU driven by a DRI (Direct Rendering Infrastructure) driver. If CONFIG_DRM (Direct Rendering Manager) is enabled, you should enable these two options as well or you'll see a blank screen once the DRI driver is loaded.
+
+Support x2apic
+Support running the interrupt controller of 64-bit x86 processors in x2APIC mode. x2APIC may be enabled by firmware on 64-bit x86 systems, and a kernel without this option enabled will panic on boot if x2APIC is enabled by firmware. This option has no effect, but also does no harm if x2APIC is disabled by the firmware.
+
+Alternatively, make oldconfig may be more appropriate in some situations. See the README file for more information.
+
+If desired, skip kernel configuration by copying the kernel config file, .config, from the host system (assuming it is available) to the unpacked linux-6.10.5 directory. However, we do not recommend this option. It is often better to explore all the configuration menus and create the kernel configuration from scratch.
+
+Compile the kernel image and modules:
+
+make
+If using kernel modules, module configuration in /etc/modprobe.d may be required. Information pertaining to modules and kernel configuration is located in Section 9.3, “Overview of Device and Module Handling” and in the kernel documentation in the linux-6.10.5/Documentation directory. Also, modprobe.d(5) may be of interest.
+
+Unless module support has been disabled in the kernel configuration, install the modules with:
+
+make modules_install
+After kernel compilation is complete, additional steps are required to complete the installation. Some files need to be copied to the /boot directory.
+
+[Caution] Caution
+If you've decided to use a separate /boot partition for the LFS system (maybe sharing a /boot partition with the host distro) , the files copied below should go there. The easiest way to do that is to create the entry for /boot in /etc/fstab first (read the previous section for details), then issue the following command as the root user in the chroot environment:
+
+mount /boot
+The path to the device node is omitted in the command because mount can read it from /etc/fstab.
+
+The path to the kernel image may vary depending on the platform being used. The filename below can be changed to suit your taste, but the stem of the filename should be vmlinuz to be compatible with the automatic setup of the boot process described in the next section. The following command assumes an x86 architecture:
+
+cp -iv arch/x86/boot/bzImage /boot/vmlinuz-6.10.5-lfs-12.2-systemd
+System.map is a symbol file for the kernel. It maps the function entry points of every function in the kernel API, as well as the addresses of the kernel data structures for the running kernel. It is used as a resource when investigating kernel problems. Issue the following command to install the map file:
+
+cp -iv System.map /boot/System.map-6.10.5
+The kernel configuration file .config produced by the make menuconfig step above contains all the configuration selections for the kernel that was just compiled. It is a good idea to keep this file for future reference:
+
+cp -iv .config /boot/config-6.10.5
+Install the documentation for the Linux kernel:
+
+cp -r Documentation -T /usr/share/doc/linux-6.10.5
+It is important to note that the files in the kernel source directory are not owned by root. Whenever a package is unpacked as user root (like we did inside chroot), the files have the user and group IDs of whatever they were on the packager's computer. This is usually not a problem for any other package to be installed because the source tree is removed after the installation. However, the Linux source tree is often retained for a long time. Because of this, there is a chance that whatever user ID the packager used will be assigned to somebody on the machine. That person would then have write access to the kernel source.
+
+[Note] Note
+In many cases, the configuration of the kernel will need to be updated for packages that will be installed later in BLFS. Unlike other packages, it is not necessary to remove the kernel source tree after the newly built kernel is installed.
+
+If the kernel source tree is going to be retained, run chown -R 0:0 on the linux-6.10.5 directory to ensure all files are owned by user root.
+
+[Warning] Warning
+Some kernel documentation recommends creating a symlink from /usr/src/linux pointing to the kernel source directory. This is specific to kernels prior to the 2.6 series and must not be created on an LFS system as it can cause problems for packages you may wish to build once your base LFS system is complete.
+
+[Warning] Warning
+The headers in the system's include directory (/usr/include) should always be the ones against which Glibc was compiled, that is, the sanitised headers installed in Section 5.4, “Linux-6.10.5 API Headers”. Therefore, they should never be replaced by either the raw kernel headers or any other kernel sanitized headers.
+
+10.3.2. Configuring Linux Module Load Order
+Most of the time Linux modules are loaded automatically, but sometimes it needs some specific direction. The program that loads modules, modprobe or insmod, uses /etc/modprobe.d/usb.conf for this purpose. This file needs to be created so that if the USB drivers (ehci_hcd, ohci_hcd and uhci_hcd) have been built as modules, they will be loaded in the correct order; ehci_hcd needs to be loaded prior to ohci_hcd and uhci_hcd in order to avoid a warning being output at boot time.
+
+Create a new file /etc/modprobe.d/usb.conf by running the following:
+
+install -v -m755 -d /etc/modprobe.d
+cat > /etc/modprobe.d/usb.conf << "EOF"
+# Begin /etc/modprobe.d/usb.conf
+
+install ohci_hcd /sbin/modprobe ehci_hcd ; /sbin/modprobe -i ohci_hcd ; true
+install uhci_hcd /sbin/modprobe ehci_hcd ; /sbin/modprobe -i uhci_hcd ; true
+
+# End /etc/modprobe.d/usb.conf
+EOF
+10.3.3. Contents of Linux
+Installed files:
+config-6.10.5, vmlinuz-6.10.5-lfs-12.2-systemd, and System.map-6.10.5
+Installed directories:
+/lib/modules, /usr/share/doc/linux-6.10.5
+Short Descriptions
+config-6.10.5
+
+Contains all the configuration selections for the kernel
+
+vmlinuz-6.10.5-lfs-12.2-systemd
+
+The engine of the Linux system. When turning on the computer, the kernel is the first part of the operating system that gets loaded. It detects and initializes all components of the computer's hardware, then makes these components available as a tree of files to the software and turns a single CPU into a multitasking machine capable of running scores of programs seemingly at the same time
+
+System.map-6.10.5
+
+A list of addresses and symbols; it maps the entry points and addresses of all the functions and data structures in the kernel

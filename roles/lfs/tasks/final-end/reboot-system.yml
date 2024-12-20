@@ -1,0 +1,55 @@
+11.3. Rebooting the System
+Now that all of the software has been installed, it is time to reboot your computer. However, there are still a few things to check. Here are some suggestions:
+
+Install any firmware needed if the kernel driver for your hardware requires some firmware files to function properly.
+
+Ensure a password is set for the root user.
+
+A review of the following configuration files is also appropriate at this point.
+
+/etc/bashrc
+
+/etc/dircolors
+
+/etc/fstab
+
+/etc/hosts
+
+/etc/inputrc
+
+/etc/profile
+
+/etc/resolv.conf
+
+/etc/vimrc
+
+/root/.bash_profile
+
+/root/.bashrc
+
+Now that we have said that, let's move on to booting our shiny new LFS installation for the first time! First exit from the chroot environment:
+
+logout
+Then unmount the virtual file systems:
+
+umount -v $LFS/dev/pts
+mountpoint -q $LFS/dev/shm && umount -v $LFS/dev/shm
+umount -v $LFS/dev
+umount -v $LFS/run
+umount -v $LFS/proc
+umount -v $LFS/sys
+If multiple partitions were created, unmount the other partitions before unmounting the main one, like this:
+
+umount -v $LFS/home
+umount -v $LFS
+Unmount the LFS file system itself:
+
+umount -v $LFS
+Now, reboot the system.
+
+Assuming the GRUB boot loader was set up as outlined earlier, the menu is set to boot LFS 12.2-systemd automatically.
+
+When the reboot is complete, the LFS system is ready for use. What you will see is a simple “login: ” prompt. At this point, you can proceed to the BLFS Book where you can add more software to suit your needs.
+
+If your reboot is not successful, it is time to troubleshoot. For hints on solving initial booting problems, see https://www.linuxfromscratch.org/lfs/troubleshooting.html.
+

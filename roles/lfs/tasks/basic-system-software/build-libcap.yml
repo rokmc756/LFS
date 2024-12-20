@@ -1,0 +1,47 @@
+8.26.1. Installation of Libcap
+Prevent static libraries from being installed:
+
+sed -i '/install -m.*STA/d' libcap/Makefile
+Compile the package:
+
+make prefix=/usr lib=lib
+The meaning of the make option:
+
+lib=lib
+This parameter sets the library directory to /usr/lib rather than /usr/lib64 on x86_64. It has no effect on x86.
+
+To test the results, issue:
+
+make test
+Install the package:
+
+make prefix=/usr lib=lib install
+8.26.2. Contents of Libcap
+Installed programs:
+capsh, getcap, getpcaps, and setcap
+Installed library:
+libcap.so and libpsx.so
+Short Descriptions
+capsh
+
+A shell wrapper to explore and constrain capability support
+
+getcap
+
+Examines file capabilities
+
+getpcaps
+
+Displays the capabilities of the queried process(es)
+
+setcap
+
+Sets file capabilities
+
+libcap
+
+Contains the library functions for manipulating POSIX 1003.1e capabilities
+
+libpsx
+
+Contains functions to support POSIX semantics for syscalls associated with the pthread library
