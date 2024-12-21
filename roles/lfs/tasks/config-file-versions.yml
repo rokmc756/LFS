@@ -10,19 +10,36 @@
   register : find_output
 
 
+# name
 - name: "loop through the .files output and then pick out the .path attribute"
   debug: msg={{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower }}
   loop: "{{ find_output.files }}"
 
 
+# version
 - name: "Loop through the .files output and then pick out the .path attribute"
   debug: msg={{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | last }}
   loop: "{{ find_output.files }}"
 
 
+# extract
 - name: "Loop through the .files output and then pick out the .path attribute"
   debug: msg={{ item.path.split('/')[4] | split('-') | last | split('tar.') | last }}
   loop: "{{ find_output.files }}"
+
+
+- name: Define Variables for File Name and Version and Type
+  set_fact:
+    "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower ~'_name' }}": "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower }}"
+    "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower ~'_version' }}": "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | last }}"
+    "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower ~'_type' }}": "{{ item.path.split('/')[4] | split('-') | last | split('tar.') | last }}"
+  ignore_errors: true
+  loop: "{{ find_output.files }}"
+  # with_items: "{{ find_output.files }}"
+
+
+- name: "Print File name"
+  debug: msg={{ python_name }}
 
 
 #- name: Define Variables for Network Device Names and IP Addresses and All Network Addresses Provided by IP Addresses and Prefix of Netdev
@@ -32,4 +49,5 @@
 #    "{{ 'netdev'~item.seq }}": "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') | map('extract', vars) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', weka.backend.net['ipaddr'~item.seq] ) | map(attribute='device') | first }}"
 #  with_items: "{{ netdev_seq }}"
 #  when: inventory_hostname in groups['workers']
+
 
