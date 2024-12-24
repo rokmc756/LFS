@@ -8,8 +8,6 @@
   register : lfs_tars
 
 
-# "{{ item.path.split('/')[4] | split('-') | first | lower ~ '_name' }}": "{{ item.path.split('/')[4] | split('-') | first | lower }}"
-# "{{ item.path.split('/')[4] | split('-') | first | lower ~ '_version' }}": "{{ item.path.split('/')[4] | split('-') | last | regex_replace('.tar.*', '') }}"
 - name: Define Variables for File Name and Version and Type
   set_fact:
     "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('-[0-9](.*)[0-9](.*)','') | regex_replace('-','_') | lower ~'_name' }}": "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('-[0-9](.*)[0-9](.*)','') | regex_replace('-','_') | lower }}"
@@ -19,30 +17,84 @@
     cacheable: true
   ignore_errors: true
   with_items: "{{ lfs_tars.files }}"
-
-
-- name: "Print File name"
-  debug: msg={{ item }}
-  with_items:
-    - "{{ util_linux_name }}"
-    - "{{ util_linux_version }}"
-    - "{{ util_linux_dir }}"
-    - "{{ util_linux_type }}"
+#- name: "Print File name"
+#  debug: msg={{ item }}
+#  with_items:
+#    - "{{ util_linux_name }}"
+#    - "{{ util_linux_version }}"
+#    - "{{ util_linux_dir }}"
+#    - "{{ util_linux_type }}"
 
 
 - name: "Find Remaining Tarball Files In the Source Drectory"
   find:
     paths: "{{ lfs.mnt_dir }}/sources"
-    patterns: "^[a-zA-Z]*[0-9](.*).tar(.*)(xz|gz|bz2)"
+    patterns: "^[a-zA-Z]*[0-9]*[^-]*.tar.(xz|gz|bz2)$"
     file_type: file
     use_regex: yes
-  register : lfs_remain_tars
+  register : lfs_remain_tars1
+#- name: "Loop Through the Remainning Files Output 1"
+#  debug: msg={{ item.path }}
+#  loop: "{{ lfs_remain_tars1.files }}"
+#- name: Define Variables for File Name and Version and Type
+#  debug: msg={{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\.[0-9]*','') }}
+#  with_items: "{{ lfs_remain_tars1.files }}"
 
 
-- name: "Loop Through the .files output and then pick out the .path attribute"
-  debug: msg={{ item.path }}
-  loop: "{{ lfs_remain_tars.files }}"
-  # debug: msg={{ item.path.split('/')[4] | split('-') | first | lower }}
+- name: Define Variables for Remaining File Name and Version and Type 1
+  set_fact:
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*', '') ~'_name' }}": "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*','') }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*', '') ~'_version' }}": "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('^[a-zA-Z]*','') }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*', '') ~'_type' }}": "{{ item.path.split('/')[4] | split('.tar.') | last }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*', '') ~'_dir' }}": "{{ item.path.split('/')[4] | split('.tar.') | first }}"
+    cacheable: true
+  ignore_errors: true
+  with_items: "{{ lfs_remain_tars1.files }}"
+#- name: "Print File name"
+#  debug: msg={{ item }}
+#  with_items:
+#    - "{{ expect5_name }}"
+#    - "{{ expect5_version }}"
+#    - "{{ expect5_dir }}"
+#    - "{{ expect5_type }}"
+
+
+- name: "Find Remaining Tarball Files 2 In the Source Drectory"
+  find:
+    paths: "{{ lfs.mnt_dir }}/sources"
+    patterns: "^[a-zA-Z]*[0-9](.*)[0-9]-[a-zA-Z](.*).tar.(xz|gz|bz2)"
+    file_type: file
+    use_regex: yes
+  register : lfs_remain_tars2
+#- name: "Loop Through the Remainning Files Output 2"
+#  debug: msg={{ item.path }}
+#  debug: msg={{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*','') | regex_replace('-','_') }}
+#  loop: "{{ lfs_remain_tars2.files }}"
+
+
+- name: Define Variables for Remaining File Name and Version and Type 1
+  set_fact:
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*','') | regex_replace('-','_') ~ '_name' }}": "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*','') | regex_replace('-','_') }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*','') | regex_replace('-','_') ~ '_version' }}": "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('^[a-zA-Z]*[0-9].','') | split('-') | first }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*','') | regex_replace('-','_') ~ '_dir' }}": "{{ item.path.split('/')[4] | split('.tar.') | first }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('\\.[0-9]*','') | regex_replace('-','_') ~ '_type' }}": "{{ item.path.split('/')[4] | split('.tar.') | last }}"
+    cacheable: true
+  ignore_errors: true
+  with_items: "{{ lfs_remain_tars2.files }}"
+#- name: "Print File name"
+#  debug: msg={{ item }}
+#  with_items:
+#    - "{{ tcl8_html_name }}"
+#    - "{{ tcl8_html_version }}"
+#    - "{{ tcl8_html_dir }}"
+#    - "{{ tcl8_html_type }}"
+
+
+# expect5.45.4.tar.gz  - Manual Needed
+# tcl8.6.14-html.tar.gz
+# tcl8.6.14-src.tar.gz
+# tzdata2024a.tar.gz
+# python-3.12.5-docs-html.tar.bz2
 
 
 # bzip2-1.0.8-install_docs-1.patch
@@ -52,11 +104,4 @@
 # glibc-2.40-fhs-1.patch
 # kbd-2.6.4-backspace-1.patch
 
-
-# expect5.45.4.tar.gz  - Manual Needed
-# tcl8.6.14-html.tar.gz
-# tcl8.6.14-src.tar.gz
-# tzdata2024a.tar.gz
-
-# python-3.12.5-docs-html.tar.bz2
 
