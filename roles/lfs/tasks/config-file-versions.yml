@@ -1,53 +1,62 @@
 ---
-- debug: msg="config file version test"
-
-
-- name: "Find all files in the directory"
+- name: "Find All Tarball Files In the Source Drectory"
   find:
     paths: "{{ lfs.mnt_dir }}/sources"
-    patterns: '*.tar.*'
+    patterns: "^[a-zA-Z](.*)-[0-9](.*)[0-9](.*)tar(.*)(xz|gz|bz2)"
     file_type: file
-  register : find_output
+    use_regex: yes
+  register : lfs_tars
 
 
-# name
-- name: "loop through the .files output and then pick out the .path attribute"
-  debug: msg={{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower }}
-  loop: "{{ find_output.files }}"
-
-
-# version
-- name: "Loop through the .files output and then pick out the .path attribute"
-  debug: msg={{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | last }}
-  loop: "{{ find_output.files }}"
-
-
-# extract
-- name: "Loop through the .files output and then pick out the .path attribute"
-  debug: msg={{ item.path.split('/')[4] | split('-') | last | split('tar.') | last }}
-  loop: "{{ find_output.files }}"
-
-
+# "{{ item.path.split('/')[4] | split('-') | first | lower ~ '_name' }}": "{{ item.path.split('/')[4] | split('-') | first | lower }}"
+# "{{ item.path.split('/')[4] | split('-') | first | lower ~ '_version' }}": "{{ item.path.split('/')[4] | split('-') | last | regex_replace('.tar.*', '') }}"
 - name: Define Variables for File Name and Version and Type
   set_fact:
-    "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower ~'_name' }}": "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower }}"
-    "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower ~'_version' }}": "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | last }}"
-    "{{ item.path.split('/')[4] | splitext | first  | splitext | first | split('-') | first | lower ~'_type' }}": "{{ item.path.split('/')[4] | split('-') | last | split('tar.') | last }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('-[0-9](.*)[0-9](.*)','') | regex_replace('-','_') | lower ~'_name' }}": "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('-[0-9](.*)[0-9](.*)','') | regex_replace('-','_') | lower }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('-[0-9](.*)[0-9](.*)','') | regex_replace('-','_') | lower ~'_version' }}": "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('^[a-zA-Z](.*)-','') }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('-[0-9](.*)[0-9](.*)','') | regex_replace('-','_') | lower ~'_dir' }}": "{{ item.path.split('/')[4] | split('.tar.') | last }}"
+    "{{ item.path.split('/')[4] | split('.tar.') | first | regex_replace('-[0-9](.*)[0-9](.*)','') | regex_replace('-','_') | lower ~'_type' }}": "{{ item.path.split('/')[4] | split('.tar.') | first }}"
+    cacheable: true
   ignore_errors: true
-  loop: "{{ find_output.files }}"
-  # with_items: "{{ find_output.files }}"
+  with_items: "{{ lfs_tars.files }}"
 
 
 - name: "Print File name"
-  debug: msg={{ python_name }}
+  debug: msg={{ item }}
+  with_items:
+    - "{{ util_linux_name }}"
+    - "{{ util_linux_version }}"
+    - "{{ util_linux_dir }}"
+    - "{{ util_linux_type }}"
 
 
-#- name: Define Variables for Network Device Names and IP Addresses and All Network Addresses Provided by IP Addresses and Prefix of Netdev
-#  set_fact:
-#    "{{ 'ipaddr'~item.seq }}": "{{ hostvars[inventory_hostname]['ansible_'~ netfix ~ item.end_seq ].ipv4.address }}"
-#    "{{ 'all_net'~item.seq~'_ipaddrs' }}": "{{ groups['workers'] | map('extract', hostvars, ['ansible_' ~ netfix ~ item.end_seq, 'ipv4', 'address']) | join(',') }}"
-#    "{{ 'netdev'~item.seq }}": "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') | map('extract', vars) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', weka.backend.net['ipaddr'~item.seq] ) | map(attribute='device') | first }}"
-#  with_items: "{{ netdev_seq }}"
-#  when: inventory_hostname in groups['workers']
+- name: "Find Remaining Tarball Files In the Source Drectory"
+  find:
+    paths: "{{ lfs.mnt_dir }}/sources"
+    patterns: "^[a-zA-Z]*[0-9](.*).tar(.*)(xz|gz|bz2)"
+    file_type: file
+    use_regex: yes
+  register : lfs_remain_tars
 
+
+- name: "Loop Through the .files output and then pick out the .path attribute"
+  debug: msg={{ item.path }}
+  loop: "{{ lfs_remain_tars.files }}"
+  # debug: msg={{ item.path.split('/')[4] | split('-') | first | lower }}
+
+
+# bzip2-1.0.8-install_docs-1.patch
+# coreutils-9.5-i18n-2.patch
+# expect-5.45.4-gcc14-1.patch
+# sysvinit-3.10-consolidated-1.patch
+# glibc-2.40-fhs-1.patch
+# kbd-2.6.4-backspace-1.patch
+
+
+# expect5.45.4.tar.gz  - Manual Needed
+# tcl8.6.14-html.tar.gz
+# tcl8.6.14-src.tar.gz
+# tzdata2024a.tar.gz
+
+# python-3.12.5-docs-html.tar.bz2
 
